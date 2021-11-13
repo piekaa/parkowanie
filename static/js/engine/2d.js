@@ -54,10 +54,10 @@ class PiekoszekEngine {
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
 
         const pos = [
-            50, 200,
-            300, 50,
-            300, 200
-
+            0, 0,
+            0, 200,
+            100, 0,
+            100, 200
         ]
 
         const positionBuffer = this.#gl.createBuffer();
@@ -91,7 +91,7 @@ class PiekoszekEngine {
             new Float32Array([rect.width, rect.height])
         )
 
-        this.#gl.drawArrays(this.#gl.TRIANGLES, 0, 3);
+        this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4);
 
     }
 
