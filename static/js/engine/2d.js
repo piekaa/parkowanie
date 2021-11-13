@@ -11,6 +11,10 @@ class PiekoszekEngine {
 
     constructor(canvas) {
         this.#canvas = canvas;
+
+        this.#canvas.width = 1000;
+        this.#canvas.height = 1000;
+
         this.#gl = canvas.getContext("webgl");
         this.#gl.clearColor(1, 0, 0, 1);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
