@@ -50,39 +50,47 @@ class PiekoszekEngine {
 
     #update() {
 
-        this.#gl.clearColor(1, 0, 0, 1);
+        this.#gl.clearColor(0, 0, 0, 1);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
 
-        const pos = [
-            0, 0,
-            0, 200,
-            100, 0,
-            100, 200
+        const pos_and_tex = [
+            0, 0, 0, 0,
+            0, 400, 0, 1,
+            200, 0, 1, 0,
+            200, 400, 1, 1
         ]
 
         const positionBuffer = this.#gl.createBuffer();
         this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, positionBuffer);
-        this.#gl.bufferData(this.#gl.ARRAY_BUFFER, new Float32Array(pos), this.#gl.STATIC_DRAW);
+        this.#gl.bufferData(this.#gl.ARRAY_BUFFER, new Float32Array(pos_and_tex), this.#gl.STATIC_DRAW);
 
         this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, positionBuffer);
 
         const vertexPositionLocation = this.#gl.getAttribLocation(this.#shaderProgram, 'vertexPosition');
+        const texcoordLocation = this.#gl.getAttribLocation(this.#shaderProgram, 'vertexTextureCoordinate');
 
         this.#gl.vertexAttribPointer(
             vertexPositionLocation,
             2,
             this.#gl.FLOAT,
             null,
-            0,
+            16,
             0
         );
 
+        this.#gl.vertexAttribPointer(
+            texcoordLocation,
+            2,
+            this.#gl.FLOAT,
+            null,
+            16,
+            8
+        );
+
         this.#gl.enableVertexAttribArray(vertexPositionLocation);
+        this.#gl.enableVertexAttribArray(texcoordLocation);
 
         this.#gl.useProgram(this.#shaderProgram);
-
-        // console.log(this.#canvas.width);
-        // console.log(this.#canvas.height);
 
         const rect = this.#canvas.getBoundingClientRect();
 
