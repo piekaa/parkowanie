@@ -1,5 +1,7 @@
 class PiekoszekEngine {
 
+    #canvas
+
     #gl
 
     #vertexShader
@@ -8,6 +10,7 @@ class PiekoszekEngine {
     #shaderProgram
 
     constructor(canvas) {
+        this.#canvas = canvas;
         this.#gl = canvas.getContext("webgl");
         this.#gl.clearColor(1, 0, 0, 1);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
@@ -51,9 +54,9 @@ class PiekoszekEngine {
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
 
         const pos = [
-            0, 0,
-            1, 0,
-            0, 1
+            50, 200,
+            300, 50,
+            300, 200
 
         ]
 
@@ -77,6 +80,16 @@ class PiekoszekEngine {
         this.#gl.enableVertexAttribArray(vertexPositionLocation);
 
         this.#gl.useProgram(this.#shaderProgram);
+
+        // console.log(this.#canvas.width);
+        // console.log(this.#canvas.height);
+
+        const rect = this.#canvas.getBoundingClientRect();
+
+        this.#gl.uniform2fv(
+            this.#gl.getUniformLocation(this.#shaderProgram, "screen"),
+            new Float32Array([rect.width, rect.height])
+        )
 
         this.#gl.drawArrays(this.#gl.TRIANGLES, 0, 3);
 
