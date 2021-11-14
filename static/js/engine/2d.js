@@ -1,3 +1,5 @@
+import Sprite from "./sprite.js";
+
 class PiekoszekEngine {
 
     #canvas
@@ -8,6 +10,8 @@ class PiekoszekEngine {
     #fragmentShader
 
     #shaderProgram
+
+    #sprite
 
     constructor(canvas) {
         this.#canvas = canvas;
@@ -49,6 +53,10 @@ class PiekoszekEngine {
             console.log(this.#gl.getShaderInfoLog(shader));
         }
         return shader;
+    }
+
+    createSprite(imagePath) {
+         this.#sprite = new Sprite(imagePath, this.#gl);
     }
 
 
@@ -102,6 +110,11 @@ class PiekoszekEngine {
             this.#gl.getUniformLocation(this.#shaderProgram, "screen"),
             new Float32Array([rect.width, rect.height])
         )
+
+        this.#gl.activeTexture(this.#gl.TEXTURE0);
+        this.#gl.bindTexture(this.#gl.TEXTURE_2D, this.#sprite.texture)
+        this.#gl.uniform1i(this.#gl.getUniformLocation(this.#shaderProgram, "sprite"),0)
+
 
         this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4);
 
