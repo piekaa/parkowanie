@@ -45,10 +45,10 @@ class Sprite {
         }
 
         const pos_and_tex = [
-            0, 0, 0, 0,
-            0, this.#img.height, 1, 0,
-            this.#img.width, 0, 0, 1,
-            this.#img.width, this.#img.height, 0, 0
+            0, 0, 0, 1,
+            0, this.#img.height, 0, 0,
+            this.#img.width, 0, 1, 1,
+            this.#img.width, this.#img.height, 1, 0,
         ]
 
         const positionBuffer = this.#gl.createBuffer();
