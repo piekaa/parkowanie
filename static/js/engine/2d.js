@@ -64,59 +64,8 @@ class PiekoszekEngine {
 
         this.#gl.clearColor(0, 0, 0, 1);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
+        this.#sprite.render(this.#shaderProgram, this.#canvas.getBoundingClientRect());
 
-        const pos_and_tex = [
-            0, 0, 0, 0,
-            0, 400, 0, 1,
-            200, 0, 1, 0,
-            200, 400, 1, 1
-        ]
-
-        const positionBuffer = this.#gl.createBuffer();
-        this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, positionBuffer);
-        this.#gl.bufferData(this.#gl.ARRAY_BUFFER, new Float32Array(pos_and_tex), this.#gl.STATIC_DRAW);
-
-        this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, positionBuffer);
-
-        const vertexPositionLocation = this.#gl.getAttribLocation(this.#shaderProgram, 'vertexPosition');
-        const texcoordLocation = this.#gl.getAttribLocation(this.#shaderProgram, 'vertexTextureCoordinate');
-
-        this.#gl.vertexAttribPointer(
-            vertexPositionLocation,
-            2,
-            this.#gl.FLOAT,
-            null,
-            16,
-            0
-        );
-
-        this.#gl.vertexAttribPointer(
-            texcoordLocation,
-            2,
-            this.#gl.FLOAT,
-            null,
-            16,
-            8
-        );
-
-        this.#gl.enableVertexAttribArray(vertexPositionLocation);
-        this.#gl.enableVertexAttribArray(texcoordLocation);
-
-        this.#gl.useProgram(this.#shaderProgram);
-
-        const rect = this.#canvas.getBoundingClientRect();
-
-        this.#gl.uniform2fv(
-            this.#gl.getUniformLocation(this.#shaderProgram, "screen"),
-            new Float32Array([rect.width, rect.height])
-        )
-
-        this.#gl.activeTexture(this.#gl.TEXTURE0);
-        this.#gl.bindTexture(this.#gl.TEXTURE_2D, this.#sprite.texture)
-        this.#gl.uniform1i(this.#gl.getUniformLocation(this.#shaderProgram, "sprite"),0)
-
-
-        this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4);
 
     }
 
