@@ -1,3 +1,5 @@
+import Matrix2D from "./matrix.js";
+
 class Sprite {
 
     #img;
@@ -6,6 +8,13 @@ class Sprite {
     #ready = false;
 
     texture;
+
+    #pivot
+    #position
+    #rotation
+    #scale
+
+    #temp = 0
 
     constructor(imgPath, gl) {
         this.#gl = gl;
@@ -29,6 +38,26 @@ class Sprite {
                 // Prevents t-coordinate wrapping (repeating).
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
             }
+
+            const pos_and_tex = [
+                0, 0, 0, 1,
+                0, this.#img.height, 0, 0,
+                this.#img.width, 0, 1, 1,
+                this.#img.width, this.#img.height, 1, 0,
+            ]
+
+            const positionBuffer = gl.createBuffer();
+            gl.bindBuffer(this.#gl.ARRAY_BUFFER, positionBuffer);
+            gl.bufferData(this.#gl.ARRAY_BUFFER, new Float32Array(pos_and_tex), this.#gl.STATIC_DRAW);
+
+
+            this.setPivot(this.#img.width/2, this.#img.height/2);
+
+            //todo change
+            this.#position = Matrix2D.Translation(400, 300);
+            this.#rotation = Matrix2D.RotationDeg(this.#temp++);
+            this.#scale = Matrix2D.Scale(0.5, 0.5);
+
             this.#ready = true;
         }
         this.#img.src = imgPath;
@@ -38,24 +67,15 @@ class Sprite {
         return (value & (value - 1)) === 0;
     }
 
+    setPivot(x,y) {
+        this.#pivot = Matrix2D.Translation(-x, -y);
+    }
+
     render(shaderProgram, rect) {
 
         if( !this.#ready ) {
             return;
         }
-
-        const pos_and_tex = [
-            0, 0, 0, 1,
-            0, this.#img.height, 0, 0,
-            this.#img.width, 0, 1, 1,
-            this.#img.width, this.#img.height, 1, 0,
-        ]
-
-        const positionBuffer = this.#gl.createBuffer();
-        this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, positionBuffer);
-        this.#gl.bufferData(this.#gl.ARRAY_BUFFER, new Float32Array(pos_and_tex), this.#gl.STATIC_DRAW);
-
-        this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, positionBuffer);
 
         const vertexPositionLocation = this.#gl.getAttribLocation(shaderProgram, 'vertexPosition');
         const texcoordLocation = this.#gl.getAttribLocation(shaderProgram, 'vertexTextureCoordinate');
@@ -92,6 +112,14 @@ class Sprite {
         this.#gl.bindTexture(this.#gl.TEXTURE_2D, this.texture)
         this.#gl.uniform1i(this.#gl.getUniformLocation(shaderProgram, "sprite"),0)
 
+        this.#rotation = Matrix2D.RotationDeg(this.#temp++);
+
+        const transformation =  this.#position.multiply( this.#scale.multiply(this.#rotation.multiply(this.#pivot)));
+
+        this.#gl.uniformMatrix3fv(
+            this.#gl.getUniformLocation(shaderProgram, "transformation"),
+            false,
+            transformation.float32array());
 
         this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4);
     }
