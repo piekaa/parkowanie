@@ -23,14 +23,14 @@ class PiekoszekEngine {
         this.#gl.clearColor(1, 0, 0, 1);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
 
-        fetch("/js/engine/fragment.shader")
+        fetch("/js/engine/shader/fragment.shader")
             .then(res => res.text())
             .then(text => this.#fragmentShader = this.#loadShader(this.#gl.FRAGMENT_SHADER, text))
-            .then(() => fetch("/js/engine/vertex.shader"))
+            .then(() => fetch("/js/engine/shader/vertex.shader"))
             .then(res => res.text())
             .then(text => this.#vertexShader = this.#loadShader(this.#gl.VERTEX_SHADER, text))
             .then(() => this.#initShaderProgram())
-            .then(() => setInterval(this.#update.bind(this), 100));
+            .then(() => setInterval(this.#update.bind(this), 30));
     }
 
     #initShaderProgram() {
