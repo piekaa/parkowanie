@@ -17,6 +17,8 @@ class Sprite {
     #positionBuffer
     #positionBufferData
 
+    #children = []
+
     x = 0;
     y = 0;
     // in degrees
@@ -78,11 +80,22 @@ class Sprite {
         // this.#pivot = Matrix2D.Translation(0, 0);
     }
 
+    addChild(imagePath, Type = Sprite) {
+        const sprite = new Type(imagePath, this.#gl);
+        this.#children.push(sprite);
+        return sprite;
+    }
+
     update() {
 
     }
 
-    render(shaderProgram, rect) {
+    updateChildren() {
+        this.#children.forEach(child => child.update());
+        this.#children.forEach(child => child.updateChildren());
+    }
+
+    render(shaderProgram, rect, parentTransformation = Matrix2D.Identity()) {
 
         if (!this.#ready) {
             return;
@@ -131,7 +144,12 @@ class Sprite {
         this.#gl.bindTexture(this.#gl.TEXTURE_2D, this.texture)
         this.#gl.uniform1i(this.#gl.getUniformLocation(shaderProgram, "sprite"), 0)
 
-        const transformation = this.#position.multiply(this.#scale.multiply(this.#rotation.multiply(this.#pivot)));
+        const transformation = parentTransformation
+            .multiply(this.#position)
+            .multiply(this.#scale)
+            .multiply(this.#rotation)
+            .multiply(this.#pivot);
+
 
         this.#gl.uniformMatrix3fv(
             this.#gl.getUniformLocation(shaderProgram, "transformation"),
@@ -140,6 +158,8 @@ class Sprite {
 
 
         this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4);
+
+        this.#children.forEach(child => child.render(shaderProgram, rect, transformation));
     }
 
 }
