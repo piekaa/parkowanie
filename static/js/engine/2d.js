@@ -1,4 +1,4 @@
-import Sprite from "./sprite.js";
+import Sprite from "./Sprite.js";
 
 class PiekoszekEngine {
 
@@ -11,7 +11,7 @@ class PiekoszekEngine {
 
     #shaderProgram
 
-    #sprite
+    #sprites = []
 
     constructor(canvas) {
         this.#canvas = canvas;
@@ -22,6 +22,9 @@ class PiekoszekEngine {
         this.#gl = canvas.getContext("webgl");
         this.#gl.clearColor(1, 0, 0, 1);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
+
+        this.#gl.enable(this.#gl.BLEND);
+        this.#gl.blendFunc(this.#gl.SRC_ALPHA, this.#gl.ONE_MINUS_SRC_ALPHA);
 
         fetch("/js/engine/shader/fragment.shader")
             .then(res => res.text())
@@ -55,18 +58,19 @@ class PiekoszekEngine {
         return shader;
     }
 
-    createSprite(imagePath) {
-         this.#sprite = new Sprite(imagePath, this.#gl);
+    createSprite(imagePath, Type = Sprite) {
+        const sprite = new Type(imagePath, this.#gl);
+        this.#sprites.push(sprite);
+        return sprite;
     }
 
 
     #update() {
-
         this.#gl.clearColor(0, 0, 0, 1);
+        // this.#gl.colorMask(true, true, true, true);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
-        this.#sprite.render(this.#shaderProgram, this.#canvas.getBoundingClientRect());
-
-
+        this.#sprites.forEach(sprite => sprite.update());
+        this.#sprites.forEach(sprite => sprite.render(this.#shaderProgram, this.#canvas.getBoundingClientRect()));
     }
 
 }
