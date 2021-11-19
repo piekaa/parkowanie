@@ -14,6 +14,9 @@ class Sprite {
     #rotation
     #scale
 
+    #positionBuffer
+    #positionBufferData
+
     x = 0;
     y = 0;
     // in degrees
@@ -28,6 +31,7 @@ class Sprite {
         this.#gl = gl;
         this.#img = new Image();
         this.#img.onload = () => {
+            console.log("Start");
             this.texture = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.#img);
@@ -54,13 +58,13 @@ class Sprite {
                 this.#img.width, this.#img.height, 1, 0,
             ]
 
-            const positionBuffer = gl.createBuffer();
-            gl.bindBuffer(this.#gl.ARRAY_BUFFER, positionBuffer);
-            gl.bufferData(this.#gl.ARRAY_BUFFER, new Float32Array(pos_and_tex), this.#gl.STATIC_DRAW);
+            this.#positionBuffer = gl.createBuffer();
+            this.#positionBufferData = new Float32Array(pos_and_tex);
 
 
             this.setPivot(this.#img.width / 2, this.#img.height / 2);
             this.#ready = true;
+            console.log("End");
         }
         this.#img.src = imgPath;
     }
@@ -71,6 +75,7 @@ class Sprite {
 
     setPivot(x, y) {
         this.#pivot = Matrix2D.Translation(-x, -y);
+        // this.#pivot = Matrix2D.Translation(0, 0);
     }
 
     update() {
@@ -89,6 +94,10 @@ class Sprite {
 
         const vertexPositionLocation = this.#gl.getAttribLocation(shaderProgram, 'vertexPosition');
         const texcoordLocation = this.#gl.getAttribLocation(shaderProgram, 'vertexTextureCoordinate');
+
+        this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, this.#positionBuffer);
+        this.#gl.bufferData(this.#gl.ARRAY_BUFFER, this.#positionBufferData, this.#gl.STATIC_DRAW);
+
 
         this.#gl.vertexAttribPointer(
             vertexPositionLocation,
@@ -128,6 +137,7 @@ class Sprite {
             this.#gl.getUniformLocation(shaderProgram, "transformation"),
             false,
             transformation.float32array());
+
 
         this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4);
     }
