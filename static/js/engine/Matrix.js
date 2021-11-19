@@ -38,6 +38,14 @@ class Matrix2D {
         ]);
     }
 
+    static Identity() {
+        return new Matrix2D([
+            1, 0, 0,
+            0, 1, 0,
+            0, 0, 1
+        ]);
+    }
+
     static Point(x, y) {
         return new Matrix2D(x,y, 1);
     }

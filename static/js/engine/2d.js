@@ -70,6 +70,7 @@ class PiekoszekEngine {
         // this.#gl.colorMask(true, true, true, true);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
         this.#sprites.forEach(sprite => sprite.update());
+        this.#sprites.forEach(sprite => sprite.updateChildren());
         this.#sprites.forEach(sprite => sprite.render(this.#shaderProgram, this.#canvas.getBoundingClientRect()));
     }
 
