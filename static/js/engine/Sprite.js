@@ -1,4 +1,5 @@
 import Matrix2D from "./Matrix.js";
+import Matrix from "./Matrix.js";
 
 class Sprite {
 
@@ -33,7 +34,6 @@ class Sprite {
         this.#gl = gl;
         this.#img = new Image();
         this.#img.onload = () => {
-            console.log("Start");
             this.texture = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.#img);
@@ -66,7 +66,6 @@ class Sprite {
 
             this.setPivot(this.#img.width / 2, this.#img.height / 2);
             this.#ready = true;
-            console.log("End");
         }
         this.#img.src = imgPath;
     }
@@ -95,7 +94,7 @@ class Sprite {
         this.#children.forEach(child => child.updateChildren());
     }
 
-    render(shaderProgram, rect, parentTransformation = Matrix2D.Identity()) {
+    render(shaderProgram, screenAndCameraArray, parentTransformation = Matrix2D.Identity()) {
 
         if (!this.#ready) {
             return;
@@ -135,11 +134,6 @@ class Sprite {
 
         this.#gl.useProgram(shaderProgram);
 
-        this.#gl.uniform2fv(
-            this.#gl.getUniformLocation(shaderProgram, "screen"),
-            new Float32Array([rect.width, rect.height])
-        )
-
         this.#gl.activeTexture(this.#gl.TEXTURE0);
         this.#gl.bindTexture(this.#gl.TEXTURE_2D, this.texture)
         this.#gl.uniform1i(this.#gl.getUniformLocation(shaderProgram, "sprite"), 0)
@@ -150,16 +144,20 @@ class Sprite {
             .multiply(this.#rotation)
             .multiply(this.#pivot);
 
-
         this.#gl.uniformMatrix3fv(
             this.#gl.getUniformLocation(shaderProgram, "transformation"),
             false,
             transformation.float32array());
 
+        this.#gl.uniformMatrix3fv(
+            this.#gl.getUniformLocation(shaderProgram, "screenAndCamera"),
+            false,
+            screenAndCameraArray);
+
 
         this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4);
 
-        this.#children.forEach(child => child.render(shaderProgram, rect, transformation));
+        this.#children.forEach(child => child.render(shaderProgram, screenAndCameraArray, transformation));
     }
 
 }
