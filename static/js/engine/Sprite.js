@@ -1,4 +1,4 @@
-import Matrix2D from "./matrix.js";
+import Matrix2D from "./Matrix.js";
 
 class Sprite {
 
@@ -14,6 +14,14 @@ class Sprite {
     #rotation
     #scale
 
+    x = 0;
+    y = 0;
+    // in degrees
+    angle = 0;
+
+    sx = 1;
+    sy = 1;
+
     #temp = 0
 
     constructor(imgPath, gl) {
@@ -27,7 +35,7 @@ class Sprite {
             // WebGL1 has different requirements for power of 2 images
             // vs non power of 2 images so check if the image is a
             // power of 2 in both dimensions.
-            if( this.#isPowerOf2(this.#img.width) && this.#isPowerOf2(this.#img.height)) {
+            if (this.#isPowerOf2(this.#img.width) && this.#isPowerOf2(this.#img.height)) {
                 // Yes, it's a power of 2. Generate mips.
                 gl.generateMipmap(gl.TEXTURE_2D);
             } else {
@@ -51,13 +59,7 @@ class Sprite {
             gl.bufferData(this.#gl.ARRAY_BUFFER, new Float32Array(pos_and_tex), this.#gl.STATIC_DRAW);
 
 
-            this.setPivot(this.#img.width/2, this.#img.height/2);
-
-            //todo change
-            this.#position = Matrix2D.Translation(400, 300);
-            this.#rotation = Matrix2D.RotationDeg(this.#temp++);
-            this.#scale = Matrix2D.Scale(0.5, 0.5);
-
+            this.setPivot(this.#img.width / 2, this.#img.height / 2);
             this.#ready = true;
         }
         this.#img.src = imgPath;
@@ -67,15 +69,23 @@ class Sprite {
         return (value & (value - 1)) === 0;
     }
 
-    setPivot(x,y) {
+    setPivot(x, y) {
         this.#pivot = Matrix2D.Translation(-x, -y);
+    }
+
+    update() {
+
     }
 
     render(shaderProgram, rect) {
 
-        if( !this.#ready ) {
+        if (!this.#ready) {
             return;
         }
+
+        this.#position = Matrix2D.Translation(this.x, this.y);
+        this.#rotation = Matrix2D.RotationDeg(this.angle);
+        this.#scale = Matrix2D.Scale(this.sx, this.sy);
 
         const vertexPositionLocation = this.#gl.getAttribLocation(shaderProgram, 'vertexPosition');
         const texcoordLocation = this.#gl.getAttribLocation(shaderProgram, 'vertexTextureCoordinate');
@@ -110,11 +120,9 @@ class Sprite {
 
         this.#gl.activeTexture(this.#gl.TEXTURE0);
         this.#gl.bindTexture(this.#gl.TEXTURE_2D, this.texture)
-        this.#gl.uniform1i(this.#gl.getUniformLocation(shaderProgram, "sprite"),0)
+        this.#gl.uniform1i(this.#gl.getUniformLocation(shaderProgram, "sprite"), 0)
 
-        this.#rotation = Matrix2D.RotationDeg(this.#temp++);
-
-        const transformation =  this.#position.multiply( this.#scale.multiply(this.#rotation.multiply(this.#pivot)));
+        const transformation = this.#position.multiply(this.#scale.multiply(this.#rotation.multiply(this.#pivot)));
 
         this.#gl.uniformMatrix3fv(
             this.#gl.getUniformLocation(shaderProgram, "transformation"),
