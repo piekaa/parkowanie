@@ -1,4 +1,6 @@
 import Sprite from "./Sprite.js";
+import Matrix2D from "./Matrix.js";
+import Camera from "./Camera.js";
 
 class PiekoszekEngine {
 
@@ -13,8 +15,18 @@ class PiekoszekEngine {
 
     #sprites = []
 
+    camera
+
+    behaviours = []
+
+    #updateParams
+
     constructor(canvas) {
         this.#canvas = canvas;
+
+        this.#updateParams = new UpdateParams();
+
+        this.camera = new Camera();
 
         this.#canvas.width = 1000;
         this.#canvas.height = 1000;
@@ -34,6 +46,10 @@ class PiekoszekEngine {
             .then(text => this.#vertexShader = this.#loadShader(this.#gl.VERTEX_SHADER, text))
             .then(() => this.#initShaderProgram())
             .then(() => setInterval(this.#update.bind(this), 30));
+    }
+
+    addBehaviour(behaviour) {
+        this.behaviours .push(behaviour);
     }
 
     #initShaderProgram() {
@@ -69,9 +85,40 @@ class PiekoszekEngine {
         this.#gl.clearColor(0, 0, 0, 1);
         // this.#gl.colorMask(true, true, true, true);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
-        this.#sprites.forEach(sprite => sprite.update());
-        this.#sprites.forEach(sprite => sprite.updateChildren());
-        this.#sprites.forEach(sprite => sprite.render(this.#shaderProgram, this.#canvas.getBoundingClientRect()));
+
+        this.behaviours.forEach(behaviour => behaviour(this.#updateParams));
+
+        this.#sprites.forEach(sprite => sprite.update(this.#updateParams));
+        this.#sprites.forEach(sprite => sprite.updateChildren(this.#updateParams));
+
+        const rect = this.#canvas.getBoundingClientRect();
+        const screenAndCamera = Matrix2D.Scale(2/rect.width, 2/rect.height).multiply(Matrix2D.Translation(-rect.width/2, -rect.height/2)).multiply(this.camera.matrix(rect));
+
+        this.#sprites.forEach(sprite => sprite.render(this.#shaderProgram, screenAndCamera.float32array()));
+    }
+
+}
+
+class UpdateParams {
+
+    #keys = [];
+
+    constructor() {
+        window.addEventListener("keydown", (event) => {
+            this.#keys[event.key] = true;
+        }, true);
+
+        window.addEventListener("keyup", (event) => {
+            this.#keys[event.key] = false;
+        }, true);
+    }
+
+    keyDown(keyCode) {
+        const keyState = this.#keys[keyCode];
+        if(keyState === undefined) {
+            return false;
+        }
+        return keyState
     }
 
 }
