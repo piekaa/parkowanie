@@ -18,6 +18,13 @@ class Bus extends Sprite {
 
     #speedLimit = 3;
 
+    #rearFollowPoint
+    #frontFollowPoint
+
+    #cameraLerp = 0.5;
+    #cameraLerpSpeed = 0.07;
+
+
     addWheels(path) {
         this.#leftFrontWheel = super.addChild(path);
         this.#leftFrontWheel.x = 310;
@@ -34,11 +41,20 @@ class Bus extends Sprite {
         this.#rightRearWheel.x = 90;
         this.#rightRearWheel.y = 80;
 
+        this.#rearFollowPoint = super.addChild(path);
+        this.#rearFollowPoint.x = 40;
+        this.#rearFollowPoint.y = 39;
+        this.#frontFollowPoint = super.addChild(path);
+        this.#frontFollowPoint.x = 340;
+        this.#frontFollowPoint.y = 39;
+
+        this.#rearFollowPoint.visible = false;
+        this.#frontFollowPoint.visible = false;
+
     }
 
     init() {
         this.renderChildrenFirst = true;
-        // this.setPivot(39, 90)
         this.setPivot(90, 39)
     }
 
@@ -83,15 +99,28 @@ class Bus extends Sprite {
             this.#speed -= this.#deceleration * Math.sign(this.#speed);
         }
 
+
+        this.#updateCameraLerp();
         this.#updatePosition();
 
     }
 
+    #updateCameraLerp() {
+        this.#cameraLerp += this.#cameraLerpSpeed * Math.sign(this.#speed);
+        this.#cameraLerp = Math.max(this.#cameraLerp, 0);
+        this.#cameraLerp = Math.min(this.#cameraLerp, 1);
+    }
+
+    followVector() {
+        return this.#rearFollowPoint.followVector()
+            .lerpClamp(this.#frontFollowPoint.followVector(), this.#cameraLerp);
+    }
+
     #limitSpeed() {
-        if(this.#speed > this.#speedLimit) {
+        if (this.#speed > this.#speedLimit) {
             this.#speed = this.#speedLimit;
         }
-        if( this.#speed < -this.#speedLimit) {
+        if (this.#speed < -this.#speedLimit) {
             this.#speed = -this.#speedLimit;
         }
     }

@@ -20,10 +20,16 @@ class Sprite {
 
     #children = []
 
+    visible = true;
+
     renderChildrenFirst = false;
 
     x = 0;
     y = 0;
+
+    //world x and y
+    wx = 0;
+    wy = 0;
     // in degrees
     angle = 0;
 
@@ -88,6 +94,10 @@ class Sprite {
         return sprite;
     }
 
+    followVector() {
+        return new Vector(this.wx,this.wy);
+    }
+
     update() {
 
     }
@@ -106,7 +116,6 @@ class Sprite {
     }
 
     render(shaderProgram, screenAndCameraArray, parentTransformation = Matrix2D.Identity()) {
-
         if (!this.#ready) {
             return;
         }
@@ -121,57 +130,64 @@ class Sprite {
             .multiply(this.#rotation)
             .multiply(this.#pivot);
 
+        this.wx = transformation.x();
+        this.wy = transformation.y();
+
         if (this.renderChildrenFirst) {
             this.#children.forEach(child => child.render(shaderProgram, screenAndCameraArray, transformation));
         }
 
-        const vertexPositionLocation = this.#gl.getAttribLocation(shaderProgram, 'vertexPosition');
-        const texcoordLocation = this.#gl.getAttribLocation(shaderProgram, 'vertexTextureCoordinate');
+        if( this.visible) {
 
-        this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, this.#positionBuffer);
-        this.#gl.bufferData(this.#gl.ARRAY_BUFFER, this.#positionBufferData, this.#gl.STATIC_DRAW);
+            const vertexPositionLocation = this.#gl.getAttribLocation(shaderProgram, 'vertexPosition');
+            const texcoordLocation = this.#gl.getAttribLocation(shaderProgram, 'vertexTextureCoordinate');
 
-
-        this.#gl.vertexAttribPointer(
-            vertexPositionLocation,
-            2,
-            this.#gl.FLOAT,
-            null,
-            16,
-            0
-        );
-
-        this.#gl.vertexAttribPointer(
-            texcoordLocation,
-            2,
-            this.#gl.FLOAT,
-            null,
-            16,
-            8
-        );
-
-        this.#gl.enableVertexAttribArray(vertexPositionLocation);
-        this.#gl.enableVertexAttribArray(texcoordLocation);
-
-        this.#gl.useProgram(shaderProgram);
-
-        this.#gl.activeTexture(this.#gl.TEXTURE0);
-        this.#gl.bindTexture(this.#gl.TEXTURE_2D, this.texture)
-        this.#gl.uniform1i(this.#gl.getUniformLocation(shaderProgram, "sprite"), 0)
+            this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, this.#positionBuffer);
+            this.#gl.bufferData(this.#gl.ARRAY_BUFFER, this.#positionBufferData, this.#gl.STATIC_DRAW);
 
 
-        this.#gl.uniformMatrix3fv(
-            this.#gl.getUniformLocation(shaderProgram, "transformation"),
-            false,
-            transformation.float32array());
+            this.#gl.vertexAttribPointer(
+                vertexPositionLocation,
+                2,
+                this.#gl.FLOAT,
+                null,
+                16,
+                0
+            );
 
-        this.#gl.uniformMatrix3fv(
-            this.#gl.getUniformLocation(shaderProgram, "screenAndCamera"),
-            false,
-            screenAndCameraArray);
+            this.#gl.vertexAttribPointer(
+                texcoordLocation,
+                2,
+                this.#gl.FLOAT,
+                null,
+                16,
+                8
+            );
+
+            this.#gl.enableVertexAttribArray(vertexPositionLocation);
+            this.#gl.enableVertexAttribArray(texcoordLocation);
+
+            this.#gl.useProgram(shaderProgram);
+
+            this.#gl.activeTexture(this.#gl.TEXTURE0);
+            this.#gl.bindTexture(this.#gl.TEXTURE_2D, this.texture)
+            this.#gl.uniform1i(this.#gl.getUniformLocation(shaderProgram, "sprite"), 0)
 
 
-        this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4);
+            this.#gl.uniformMatrix3fv(
+                this.#gl.getUniformLocation(shaderProgram, "transformation"),
+                false,
+                transformation.float32array());
+
+            this.#gl.uniformMatrix3fv(
+                this.#gl.getUniformLocation(shaderProgram, "screenAndCamera"),
+                false,
+                screenAndCameraArray);
+
+
+            this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4);
+
+        }
 
         if (!this.renderChildrenFirst) {
             this.#children.forEach(child => child.render(shaderProgram, screenAndCameraArray, transformation));

@@ -79,12 +79,16 @@ class PiekoszekEngine {
         // this.#gl.colorMask(true, true, true, true);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
 
+        const rect = this.#canvas.getBoundingClientRect();
+        this.#updateParams.screenRect = rect;
+
         this.behaviours.forEach(behaviour => behaviour(this.#updateParams));
 
         this.#sprites.forEach(sprite => sprite.update(this.#updateParams));
         this.#sprites.forEach(sprite => sprite.updateChildren(this.#updateParams));
 
-        const rect = this.#canvas.getBoundingClientRect();
+        this.camera.update(this.#updateParams);
+
         const screenAndCamera = Matrix2D.Scale(2/rect.width, 2/rect.height).multiply(Matrix2D.Translation(-rect.width/2, -rect.height/2)).multiply(this.camera.matrix(rect));
 
         this.#sprites.forEach(sprite => sprite.render(this.#shaderProgram, screenAndCamera.float32array()));
@@ -95,6 +99,7 @@ class PiekoszekEngine {
 class UpdateParams {
 
     #keys = [];
+    screenRect;
 
     constructor() {
         window.addEventListener("keydown", (event) => {
@@ -113,7 +118,6 @@ class UpdateParams {
         }
         return keyState
     }
-
 }
 
 export default PiekoszekEngine
