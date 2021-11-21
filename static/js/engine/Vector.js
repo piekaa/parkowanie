@@ -53,6 +53,16 @@ class Vector {
         console.log(`x: ${this.x}, y: ${this.y}`);
     }
 
+    // step is value from 0 to 1
+    lerpClamp(vector, step) {
+        step = Math.min(step, 1);
+        step = Math.max(step, 0);
+        return new Vector(
+            (vector.x - this.x) * step + this.x,
+            (vector.y - this.y) * step + this.y
+        );
+    }
+
 }
 
 export default Vector

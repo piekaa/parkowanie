@@ -6,11 +6,26 @@ class Camera {
     sx = 1;
     sy = 1;
 
+    #toFollow;
+
     matrix(rect) {
-        return Matrix2D.Translation(rect.width/2, rect.height/2)
+        return Matrix2D.Translation(rect.width / 2, rect.height / 2)
             .multiply(Matrix2D.Scale(this.sx, this.sy))
-            .multiply(Matrix2D.Translation(-rect.width/2, -rect.height/2))
+            .multiply(Matrix2D.Translation(-rect.width / 2, -rect.height / 2))
             .multiply(Matrix2D.Translation(-this.x, -this.y));
+    }
+
+    follow(sprite) {
+        this.#toFollow = sprite;
+    }
+
+    update(params) {
+        if (this.#toFollow === undefined) {
+            return
+        }
+        const fp = this.#toFollow.followVector();
+        this.x = fp.x - params.screenRect.width / 2;
+        this.y = fp.y - params.screenRect.height / 2;
     }
 }
 
