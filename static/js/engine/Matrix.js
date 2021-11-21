@@ -4,7 +4,7 @@ class Matrix2D {
 
     constructor(values) {
       if(values.length !== 9 && values.length !== 3) {
-          throw new Error("Wrong matrix size: " + m.length);
+          throw new Error("Wrong matrix size: " + values.length);
       }
       this.#v = values;
     }
@@ -45,9 +45,9 @@ class Matrix2D {
         ]);
     }
 
-    static Point(x, y) {
-        return new Matrix2D(x,y, 1);
-    }
+    // static Point(x, y) {
+    //     return new Matrix2D([x,y,1]);
+    // }
 
     float32array() {
         return new Float32Array(this.#v);
@@ -79,11 +79,11 @@ class Matrix2D {
     }
     
     x() {
-        return this.#v[0];
+        return this.#v[2];
     }
     
     y() {
-        return this.#v[1];
+        return this.#v[5];
     }
 
     #mulRowColumn(m1, m2, row, column) {

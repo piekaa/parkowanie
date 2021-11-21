@@ -5,20 +5,13 @@ import Camera from "./Camera.js";
 class PiekoszekEngine {
 
     #canvas
-
     #gl
-
     #vertexShader
     #fragmentShader
-
     #shaderProgram
-
     #sprites = []
-
     camera
-
     behaviours = []
-
     #updateParams
 
     constructor(canvas) {
@@ -82,7 +75,7 @@ class PiekoszekEngine {
 
 
     #update() {
-        this.#gl.clearColor(0, 0, 0, 1);
+        this.#gl.clearColor(0.4, 0.4, 0.4, 1);
         // this.#gl.colorMask(true, true, true, true);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
 
