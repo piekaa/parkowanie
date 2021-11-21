@@ -19,15 +19,25 @@ standingBus.sx = 0.5;
 standingBus.sy = 0.5;
 standingBus.addWheels("/assets/bus/wheel.png");
 
-const cameraZoomSpeed = 0.01;
+const cameraZoomSpeed = 0.03;
+const minCamera = 0.45;
+const maxCamera = 4;
 game.addBehaviour((params) => {
     if (params.keyDown("q")) {
         game.camera.sx -= cameraZoomSpeed;
         game.camera.sy -= cameraZoomSpeed;
+        if (game.camera.sx < minCamera) {
+            game.camera.sx = minCamera;
+            game.camera.sy = minCamera;
+        }
     }
     if (params.keyDown("e")) {
         game.camera.sx += cameraZoomSpeed;
         game.camera.sy += cameraZoomSpeed;
+        if (game.camera.sx > maxCamera) {
+            game.camera.sx = maxCamera;
+            game.camera.sy = maxCamera;
+        }
     }
 })
 
