@@ -1,5 +1,5 @@
 import Matrix2D from "./Matrix.js";
-import Matrix from "./Matrix.js";
+import Vector from "./Vector.js";
 
 class Sprite {
 
@@ -19,6 +19,8 @@ class Sprite {
     #positionBufferData
 
     #children = []
+
+    renderChildrenFirst = false;
 
     x = 0;
     y = 0;
@@ -66,6 +68,7 @@ class Sprite {
 
             this.setPivot(this.#img.width / 2, this.#img.height / 2);
             this.#ready = true;
+            this.init();
         }
         this.#img.src = imgPath;
     }
@@ -89,6 +92,14 @@ class Sprite {
 
     }
 
+    init() {
+
+    }
+
+    forward() {
+        return Vector.FromAngle(this.angle);
+    }
+
     updateChildren() {
         this.#children.forEach(child => child.update());
         this.#children.forEach(child => child.updateChildren());
@@ -103,6 +114,16 @@ class Sprite {
         this.#position = Matrix2D.Translation(this.x, this.y);
         this.#rotation = Matrix2D.RotationDeg(this.angle);
         this.#scale = Matrix2D.Scale(this.sx, this.sy);
+
+        const transformation = parentTransformation
+            .multiply(this.#position)
+            .multiply(this.#scale)
+            .multiply(this.#rotation)
+            .multiply(this.#pivot);
+
+        if (this.renderChildrenFirst) {
+            this.#children.forEach(child => child.render(shaderProgram, screenAndCameraArray, transformation));
+        }
 
         const vertexPositionLocation = this.#gl.getAttribLocation(shaderProgram, 'vertexPosition');
         const texcoordLocation = this.#gl.getAttribLocation(shaderProgram, 'vertexTextureCoordinate');
@@ -138,11 +159,6 @@ class Sprite {
         this.#gl.bindTexture(this.#gl.TEXTURE_2D, this.texture)
         this.#gl.uniform1i(this.#gl.getUniformLocation(shaderProgram, "sprite"), 0)
 
-        const transformation = parentTransformation
-            .multiply(this.#position)
-            .multiply(this.#scale)
-            .multiply(this.#rotation)
-            .multiply(this.#pivot);
 
         this.#gl.uniformMatrix3fv(
             this.#gl.getUniformLocation(shaderProgram, "transformation"),
@@ -157,7 +173,9 @@ class Sprite {
 
         this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4);
 
-        this.#children.forEach(child => child.render(shaderProgram, screenAndCameraArray, transformation));
+        if (!this.renderChildrenFirst) {
+            this.#children.forEach(child => child.render(shaderProgram, screenAndCameraArray, transformation));
+        }
     }
 
 }
