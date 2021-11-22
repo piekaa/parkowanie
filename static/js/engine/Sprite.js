@@ -24,7 +24,9 @@ class Sprite {
 
     renderChildrenFirst = false;
 
-    #game
+    game
+
+    shaderProgram;
 
     x = 0;
     y = 0;
@@ -46,7 +48,7 @@ class Sprite {
 
     constructor(imgPath, gl, game) {
         this.#gl = gl;
-        this.#game = game;
+        this.game = game;
         this.#img = new Image();
         this.#img.onload = () => {
             this.texture = gl.createTexture();
@@ -99,7 +101,7 @@ class Sprite {
     }
 
     addChild(imagePath, Type = Sprite, transformation = {x: 0, y: 0, sx: 1, sy: 1}) {
-        const sprite = this.#game.newSprite(imagePath, Type, transformation);
+        const sprite = this.game.newSprite(imagePath, Type, transformation);
         this.#children.push(sprite);
         return sprite;
     }
@@ -109,9 +111,9 @@ class Sprite {
         collider.sprite = this;
 
         if( this.moving) {
-            this.#game.addMovingCollider(collider);
+            this.game.addMovingCollider(collider);
         } else {
-            this.#game.addNotMovingCollider(collider);
+            this.game.addNotMovingCollider(collider);
         }
     }
 
@@ -144,7 +146,7 @@ class Sprite {
 
     }
 
-    render(shaderProgram, screenAndCameraArray, parentTransformation = Matrix2D.Identity()) {
+    render(screenAndCameraArray, parentTransformation = Matrix2D.Identity()) {
         if (!this.#ready) {
             return;
         }
@@ -165,13 +167,13 @@ class Sprite {
         this.#colliders.forEach(collider => collider.update(transformation));
 
         if (this.renderChildrenFirst) {
-            this.#children.forEach(child => child.render(shaderProgram, screenAndCameraArray, transformation));
+            this.#children.forEach(child => child.render(screenAndCameraArray, transformation));
         }
 
         if (this.visible) {
 
-            const vertexPositionLocation = this.#gl.getAttribLocation(shaderProgram, 'vertexPosition');
-            const texcoordLocation = this.#gl.getAttribLocation(shaderProgram, 'vertexTextureCoordinate');
+            const vertexPositionLocation = this.#gl.getAttribLocation(this.shaderProgram, 'vertexPosition');
+            const texcoordLocation = this.#gl.getAttribLocation(this.shaderProgram, 'vertexTextureCoordinate');
 
             this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, this.#positionBuffer);
             this.#gl.bufferData(this.#gl.ARRAY_BUFFER, this.#positionBufferData, this.#gl.STATIC_DRAW);
@@ -198,25 +200,25 @@ class Sprite {
             this.#gl.enableVertexAttribArray(vertexPositionLocation);
             this.#gl.enableVertexAttribArray(texcoordLocation);
 
-            this.#gl.useProgram(shaderProgram);
+            this.#gl.useProgram(this.shaderProgram);
 
             this.#gl.activeTexture(this.#gl.TEXTURE0);
             this.#gl.bindTexture(this.#gl.TEXTURE_2D, this.texture)
-            this.#gl.uniform1i(this.#gl.getUniformLocation(shaderProgram, "sprite"), 0)
+            this.#gl.uniform1i(this.#gl.getUniformLocation(this.shaderProgram, "sprite"), 0)
 
 
             this.#gl.uniformMatrix3fv(
-                this.#gl.getUniformLocation(shaderProgram, "transformation"),
+                this.#gl.getUniformLocation(this.shaderProgram, "transformation"),
                 false,
                 transformation.float32array());
 
             this.#gl.uniformMatrix3fv(
-                this.#gl.getUniformLocation(shaderProgram, "screenAndCamera"),
+                this.#gl.getUniformLocation(this.shaderProgram, "screenAndCamera"),
                 false,
                 screenAndCameraArray);
 
             this.#gl.uniform4fv(
-                this.#gl.getUniformLocation(shaderProgram, "color"),
+                this.#gl.getUniformLocation(this.shaderProgram, "color"),
                 this.#colorArray
             )
 
@@ -226,7 +228,7 @@ class Sprite {
         }
 
         if (!this.renderChildrenFirst) {
-            this.#children.forEach(child => child.render(shaderProgram, screenAndCameraArray, transformation));
+            this.#children.forEach(child => child.render(screenAndCameraArray, transformation));
         }
     }
 

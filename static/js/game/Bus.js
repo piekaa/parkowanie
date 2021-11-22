@@ -64,7 +64,13 @@ class Bus extends Sprite {
 
     init() {
         this.renderChildrenFirst = true;
-        this.setPivot(90, 39)
+        this.setPivot(90, 39);
+        this.visible = false;
+        this.game.createShaderProgramPromise("/js/game/shader/busFragment.shader", "/js/engine/shader/vertex.shader")
+            .then(shaderProgram => {
+                this.shaderProgram = shaderProgram;
+                this.visible = true;
+            })
     }
 
     turnLeft() {
