@@ -2,6 +2,7 @@ import PiekoszekEngine from '/js/engine/2d.js'
 import Bus from "./Bus.js";
 import StandingBus from "./StandingBus.js";
 import Sprite from "../engine/Sprite.js";
+import Vector from "../engine/Vector.js";
 
 const game = new PiekoszekEngine(document.getElementById("canvas"));
 
@@ -26,6 +27,28 @@ bus.addWheels("/assets/bus/wheel.png");
 const cameraZoomSpeed = 0.03;
 const minCamera = 0.45;
 const maxCamera = 4;
+
+
+const topRight = game.createSprite("/assets/bus/wheel.png", Sprite, {
+    x: 900,
+    y: 900,
+})
+
+game.createSprite("/assets/bus/wheel.png", Sprite, {
+    x: 700,
+    y: 900,
+})
+
+const leftBottom = game.createSprite("/assets/bus/wheel.png", Sprite, {
+    x: 700,
+    y: 400,
+})
+
+game.createSprite("/assets/bus/wheel.png", Sprite, {
+    x: 900,
+    y: 400,
+})
+
 game.addBehaviour((params) => {
     if (params.keyDown("q")) {
         game.camera.sx -= cameraZoomSpeed;
@@ -45,15 +68,21 @@ game.addBehaviour((params) => {
     }
 
     const mouse = params.mouse();
-    if( mouse.mouseJustPressed) {
-        console.log(`Mouse world position wx: ${mouse.wx}, wy: ${mouse.wy}`);
+    if (mouse.mouseJustPressed) {
+
+        const botToMouse = Vector.Direction(leftBottom.wx, leftBottom.wy, mouse.wx, mouse.wy);
+        const topToMouse = Vector.Direction(topRight.wx, topRight.wy, mouse.wx, mouse.wy);
+
+        // console.log("Bot:");
+        // botToMouse.display();
+        //
+        // console.log("Top:");
+        // topToMouse.display();
+
+        console.log(`Dot: ${botToMouse.dot(topToMouse)}`);
+
     }
 
-})
-
-game.createSprite("/assets/bus/wheel.png", Sprite, {
-    x: 700,
-    y: 900,
 })
 
 game.camera.follow(bus);
