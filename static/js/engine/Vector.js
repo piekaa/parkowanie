@@ -82,6 +82,14 @@ class Vector {
     direction(vector) {
         return Vector.Direction(this.x, this.y, vector.x, vector.y);
     }
+
+    normal(vector) {
+        return this.direction(vector).#n();
+    }
+
+    #n() {
+        return new Vector(-this.y, this.x);
+    }
 }
 
 export default Vector

@@ -70,16 +70,16 @@ game.addBehaviour((params) => {
     if (mouse.mouseJustPressed) {
 
         const mouseVector = mouse.mouseWorldVector;
-
-        const left = topLeft.worldPositionVector().mid(botLeft);
-        const right = topRight.worldPositionVector().mid(botRight);
-
-        const leftToMouse = left.direction(mouseVector);
-        const rightToMouse = right.direction(mouseVector);
-
-        rightToMouse.display();
-
-        console.log(`Dot: ${leftToMouse.dot(rightToMouse)}`);
+        const normal = botLeft.worldPositionVector().normal(topLeft.worldPositionVector());
+        const mouseToLeft = mouseVector.direction(botLeft.worldPositionVector());
+        console.log("Normal");
+        normal.display();
+        console.log("Mouse to left");
+        mouseToLeft.display();
+        console.log();
+        console.log();
+        console.log();
+        console.log(`Dot: ${mouseToLeft.dot(normal)}`);
 
     }
 
