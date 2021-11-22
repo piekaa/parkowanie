@@ -1,11 +1,18 @@
-import PiekoszekEngine from '/js/engine/2d.js'
+import PiekoszekEngine from '/js/engine/PiekoszekEngine.js'
 import Bus from "./Bus.js";
 import StandingBus from "./StandingBus.js";
-import Sprite from "../engine/Sprite.js";
 import Collider from "../engine/Collider.js";
 import Vector from "../engine/Vector.js";
 
 const game = new PiekoszekEngine(document.getElementById("canvas"));
+
+const bus = game.createSprite("/assets/bus/bus.png", Bus,
+    {
+        x: 200,
+        y: 300,
+        sx: 0.5,
+        sy: 0.5
+    });
 
 const standingBus = game.createSprite("/assets/bus/bus.png", StandingBus,
     {
@@ -15,50 +22,38 @@ const standingBus = game.createSprite("/assets/bus/bus.png", StandingBus,
         sy: 0.5,
     });
 standingBus.addWheels("/assets/bus/wheel.png");
+standingBus.addLights("/assets/bus/lightMask.png");
+
+const standingBus2 = game.createSprite("/assets/bus/bus.png", StandingBus,
+    {
+        x: 500,
+        y: 350,
+        sx: 0.5,
+        sy: 0.5,
+    });
+standingBus2.addWheels("/assets/bus/wheel.png");
+standingBus2.addLights("/assets/bus/lightMask.png");
+standingBus2.angle = 30;
+
 
 const collider = new Collider(
     [
-        new Vector(1,1),
-        new Vector(1,78)
-        ,new Vector(398,78),
-        new Vector(398,1),
+        new Vector(1, 1),
+        new Vector(1, 79),
+        new Vector(399, 79),
+        new Vector(399, 1),
     ]);
 
-const bus = game.createSprite("/assets/bus/bus.png", Bus,
-    {
-        x: 200,
-        y: 300,
-        sx: 0.5,
-        sy: 0.5
-    });
-bus.addWheels("/assets/bus/wheel.png");
 
-bus.addCollider(collider);
+bus.addWheels("/assets/bus/wheel.png");
+bus.moving = true;
+bus.addCollider(collider.copy());
+standingBus.addCollider(collider.copy());
+standingBus2.addCollider(collider.copy());
 
 const cameraZoomSpeed = 0.03;
 const minCamera = 0.45;
 const maxCamera = 4;
-
-
-const topRight = game.createSprite("/assets/bus/wheel.png", Sprite, {
-    x: 900,
-    y: 900,
-})
-
-const topLeft = game.createSprite("/assets/bus/wheel.png", Sprite, {
-    x: 700,
-    y: 900,
-})
-
-const botLeft = game.createSprite("/assets/bus/wheel.png", Sprite, {
-    x: 700,
-    y: 400,
-})
-
-const botRight = game.createSprite("/assets/bus/wheel.png", Sprite, {
-    x: 900,
-    y: 400,
-})
 
 game.addBehaviour((params) => {
     if (params.keyDown("q")) {
@@ -77,13 +72,6 @@ game.addBehaviour((params) => {
             game.camera.sy = maxCamera;
         }
     }
-
-    const mouse = params.mouse();
-    if (mouse.mouseJustPressed) {
-        const mouseVector = mouse.mouseWorldVector;
-        console.log(collider.isInside(mouseVector));
-    }
-
 })
 
 game.camera.follow(bus);

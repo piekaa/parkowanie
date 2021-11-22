@@ -24,32 +24,41 @@ class Bus extends Sprite {
     #cameraLerp = 0.5;
     #cameraLerpSpeed = 0.07;
 
+    #frontLeftLight;
+    #frontRightLight;
+
+    #rearLeftLight;
+    #rearRightLight;
 
     addWheels(path) {
-        this.#leftFrontWheel = super.addChild(path);
-        this.#leftFrontWheel.x = 310;
-        this.#leftFrontWheel.y = 0;
-        this.#rightFrontWheel = super.addChild(path);
-        this.#rightFrontWheel.x = 310;
-        this.#rightFrontWheel.y = 80;
+        this.#leftFrontWheel = super.addChild(path, Sprite, {x: 310, y: 0});
+        this.#rightFrontWheel = super.addChild(path, Sprite, {x: 310, y: 80});
 
+        this.#leftRearWheel = super.addChild(path, Sprite, {x: 90, y: 0});
+        this.#rightRearWheel = super.addChild(path, Sprite, {x: 90, y: 80});
 
-        this.#leftRearWheel = super.addChild(path);
-        this.#leftRearWheel.x = 90;
-        this.#leftRearWheel.y = 0;
-        this.#rightRearWheel = super.addChild(path);
-        this.#rightRearWheel.x = 90;
-        this.#rightRearWheel.y = 80;
-
-        this.#rearFollowPoint = super.addChild(path);
-        this.#rearFollowPoint.x = 40;
-        this.#rearFollowPoint.y = 39;
-        this.#frontFollowPoint = super.addChild(path);
-        this.#frontFollowPoint.x = 340;
-        this.#frontFollowPoint.y = 39;
+        this.#rearFollowPoint = super.addChild(path, Sprite, {x: 40, y: 39});
+        this.#frontFollowPoint = super.addChild(path, Sprite, {x: 340, y: 39});
 
         this.#rearFollowPoint.visible = false;
         this.#frontFollowPoint.visible = false;
+
+    }
+
+    addLights(path) {
+        this.#frontRightLight = super.addChild(path, Sprite, {x: 448, y: 15});
+        this.#frontLeftLight = super.addChild(path, Sprite, {x: 448, y: 75});
+
+        this.#frontLeftLight.setColor([0.9, 0.9, 0.5, 1]);
+        this.#frontRightLight.setColor([0.9, 0.9, 0.5, 1]);
+
+        this.#rearRightLight = super.addChild(path, Sprite, {x: -40, y: 15, sx: -1});
+        this.#rearLeftLight = super.addChild(path, Sprite, {x: -40, y: 70, sx: -1});
+
+        this.#rearRightLight.setColor([0.9, 0.3, 0.3, 1]);
+        this.#rearLeftLight.setColor([0.9, 0.3, 0.3, 1]);
+
+        this.turnOffLights();
 
     }
 
@@ -125,11 +134,24 @@ class Bus extends Sprite {
         }
     }
 
+    turnOnLights() {
+        this.#frontRightLight.visible = true;
+        this.#frontLeftLight.visible = true;
+        this.#rearRightLight.visible = true;
+        this.#rearLeftLight.visible = true;
+    }
+
+    turnOffLights() {
+        this.#frontRightLight.visible = false;
+        this.#frontLeftLight.visible = false;
+        this.#rearRightLight.visible = false;
+        this.#rearLeftLight.visible = false;
+    }
+
     #updatePosition() {
         const newPosition = this.forward().multiply(this.#speed).add(new Vector(this.x, this.y))
         this.x = newPosition.x;
         this.y = newPosition.y;
-
         this.angle += this.#wheelsAngle * this.#speed / 50;
     }
 

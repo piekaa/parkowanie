@@ -15,6 +15,9 @@ class PiekoszekEngine {
     behaviours = []
     #updateParams
 
+    #movingColliders = [];
+    #notMovingColliders = [];
+
     constructor(canvas) {
         this.#canvas = canvas;
 
@@ -43,7 +46,7 @@ class PiekoszekEngine {
     }
 
     addBehaviour(behaviour) {
-        this.behaviours .push(behaviour);
+        this.behaviours.push(behaviour);
     }
 
     #initShaderProgram() {
@@ -73,6 +76,8 @@ class PiekoszekEngine {
 
         transformation.sx = transformation.sx || 1;
         transformation.sy = transformation.sy || 1;
+        transformation.x = transformation.x || 0;
+        transformation.y = transformation.y || 0;
 
         sprite.x = transformation.x;
         sprite.y = transformation.y;
@@ -81,21 +86,56 @@ class PiekoszekEngine {
         return sprite;
     }
 
-    createSprite(imagePath, Type = Sprite, transformation = {x : 0, y: 0, sx: 1, sy: 1}) {
+    createSprite(imagePath, Type = Sprite, transformation = {x: 0, y: 0, sx: 1, sy: 1}) {
         const sprite = this.newSprite(imagePath, Type, transformation);
         this.#sprites.push(sprite);
         return sprite;
     }
 
+    addMovingCollider(collider) {
+        this.#movingColliders.push(collider);
+    }
+
+    addNotMovingCollider(collider) {
+        this.#notMovingColliders.push(collider);
+    }
 
     #update() {
-        this.#gl.clearColor(0.4, 0.4, 0.4, 1);
-        // this.#gl.colorMask(true, true, true, true);
-        this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
-
         const rect = this.#canvas.getBoundingClientRect();
         this.#updateParams.screenRect = rect;
+        this.#checkCollisions();
+        this.#runUpdates();
+        this.#render(rect);
+    }
 
+    #checkCollisions() {
+        for (let i = 0; i < this.#movingColliders.length; i++){
+            const collider = this.#movingColliders[i];
+            for (let j = 0; j < this.#movingColliders.length; j++){
+                if( i === j ) {
+                    continue;
+                }
+                const collider2 = this.#movingColliders[j];
+
+                if(collider.collides(collider2)) {
+                    collider.sprite.onCollision();
+                    collider2.sprite.onCollision();
+                }
+            }
+
+            for (let j = 0; j < this.#notMovingColliders.length; j++){
+                const collider2 = this.#notMovingColliders[j];
+
+                if(collider.collides(collider2)) {
+                    collider.sprite.onCollision();
+                    collider2.sprite.onCollision();
+                }
+            }
+
+        }
+    }
+
+    #runUpdates() {
         this.behaviours.forEach(behaviour => behaviour(this.#updateParams));
 
         this.#sprites.forEach(sprite => sprite.update(this.#updateParams));
@@ -104,9 +144,12 @@ class PiekoszekEngine {
         this.camera.update(this.#updateParams);
 
         this.#updateParams.update();
+    }
 
-        const screenAndCamera = Matrix2D.Scale(2/rect.width, 2/rect.height).multiply(Matrix2D.Translation(-rect.width/2, -rect.height/2)).multiply(this.camera.matrix(rect));
-
+    #render(rect) {
+        this.#gl.clearColor(0.4, 0.4, 0.4, 1);
+        this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
+        const screenAndCamera = Matrix2D.Scale(2 / rect.width, 2 / rect.height).multiply(Matrix2D.Translation(-rect.width / 2, -rect.height / 2)).multiply(this.camera.matrix(rect));
         this.#sprites.forEach(sprite => sprite.render(this.#shaderProgram, screenAndCamera.float32array()));
     }
 
@@ -157,7 +200,7 @@ class UpdateParams {
 
     keyDown(keyCode) {
         const keyState = this.#keys[keyCode];
-        if(keyState === undefined) {
+        if (keyState === undefined) {
             return false;
         }
         return keyState;
