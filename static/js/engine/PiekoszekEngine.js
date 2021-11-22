@@ -7,9 +7,7 @@ class PiekoszekEngine {
 
     #canvas
     #gl
-    #vertexShader
-    #fragmentShader
-    #shaderProgram
+    #standardShaderProgram
     #sprites = []
     camera
     behaviours = []
@@ -18,7 +16,7 @@ class PiekoszekEngine {
     #movingColliders = [];
     #notMovingColliders = [];
 
-    constructor(canvas) {
+    constructor(canvas, afterInitFunction) {
         this.#canvas = canvas;
 
         this.camera = new Camera();
@@ -35,29 +33,36 @@ class PiekoszekEngine {
         this.#gl.enable(this.#gl.BLEND);
         this.#gl.blendFunc(this.#gl.SRC_ALPHA, this.#gl.ONE_MINUS_SRC_ALPHA);
 
-        fetch("/js/engine/shader/fragment.shader")
-            .then(res => res.text())
-            .then(text => this.#fragmentShader = this.#loadShader(this.#gl.FRAGMENT_SHADER, text))
-            .then(() => fetch("/js/engine/shader/vertex.shader"))
-            .then(res => res.text())
-            .then(text => this.#vertexShader = this.#loadShader(this.#gl.VERTEX_SHADER, text))
-            .then(() => this.#initShaderProgram())
-            .then(() => setInterval(this.#update.bind(this), 30));
+        this.createShaderProgramPromise("/js/engine/shader/fragment.shader", "/js/engine/shader/vertex.shader")
+            .then(shaderProgram =>  {
+                this.#standardShaderProgram = shaderProgram;
+                setInterval(this.#update.bind(this), 30);
+                afterInitFunction();
+            });
     }
 
-    addBehaviour(behaviour) {
-        this.behaviours.push(behaviour);
+    createShaderProgramPromise(fragmentShaderPath, vertexShaderPath) {
+        let vertexShader;
+        let fragmentShader;
+        return fetch(fragmentShaderPath)
+            .then(res => res.text())
+            .then(text => fragmentShader = this.#loadShader(this.#gl.FRAGMENT_SHADER, text))
+            .then(() => fetch(vertexShaderPath))
+            .then(res => res.text())
+            .then(text => vertexShader = this.#loadShader(this.#gl.VERTEX_SHADER, text))
+            .then(() => this.#initShaderProgram(fragmentShader, vertexShader))
     }
 
-    #initShaderProgram() {
-        this.#shaderProgram = this.#gl.createProgram();
-        this.#gl.attachShader(this.#shaderProgram, this.#vertexShader);
-        this.#gl.attachShader(this.#shaderProgram, this.#fragmentShader);
-        this.#gl.linkProgram(this.#shaderProgram);
+    #initShaderProgram(fragmentShader, vertexShader) {
+        const shaderProgram = this.#gl.createProgram();
+        this.#gl.attachShader(shaderProgram, vertexShader);
+        this.#gl.attachShader(shaderProgram, fragmentShader);
+        this.#gl.linkProgram(shaderProgram);
 
-        if (!this.#gl.getProgramParameter(this.#shaderProgram, this.#gl.LINK_STATUS)) {
-            console.log(+this.#gl.getProgramInfoLog(this.#shaderProgram));
+        if (!this.#gl.getProgramParameter(shaderProgram, this.#gl.LINK_STATUS)) {
+            console.log(this.#gl.getProgramInfoLog(shaderProgram));
         }
+        return shaderProgram;
     }
 
     #loadShader(type, source) {
@@ -71,8 +76,13 @@ class PiekoszekEngine {
         return shader;
     }
 
+    addBehaviour(behaviour) {
+        this.behaviours.push(behaviour);
+    }
+
     newSprite(imagePath, Type = Sprite, transformation) {
         const sprite = new Type(imagePath, this.#gl, this);
+        sprite.shaderProgram = this.#standardShaderProgram;
 
         transformation.sx = transformation.sx || 1;
         transformation.sy = transformation.sy || 1;
@@ -109,24 +119,24 @@ class PiekoszekEngine {
     }
 
     #checkCollisions() {
-        for (let i = 0; i < this.#movingColliders.length; i++){
+        for (let i = 0; i < this.#movingColliders.length; i++) {
             const collider = this.#movingColliders[i];
-            for (let j = 0; j < this.#movingColliders.length; j++){
-                if( i === j ) {
+            for (let j = 0; j < this.#movingColliders.length; j++) {
+                if (i === j) {
                     continue;
                 }
                 const collider2 = this.#movingColliders[j];
 
-                if(collider.collides(collider2)) {
+                if (collider.collides(collider2)) {
                     collider.sprite.onCollision();
                     collider2.sprite.onCollision();
                 }
             }
 
-            for (let j = 0; j < this.#notMovingColliders.length; j++){
+            for (let j = 0; j < this.#notMovingColliders.length; j++) {
                 const collider2 = this.#notMovingColliders[j];
 
-                if(collider.collides(collider2)) {
+                if (collider.collides(collider2)) {
                     collider.sprite.onCollision();
                     collider2.sprite.onCollision();
                 }
@@ -150,7 +160,7 @@ class PiekoszekEngine {
         this.#gl.clearColor(0.4, 0.4, 0.4, 1);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
         const screenAndCamera = Matrix2D.Scale(2 / rect.width, 2 / rect.height).multiply(Matrix2D.Translation(-rect.width / 2, -rect.height / 2)).multiply(this.camera.matrix(rect));
-        this.#sprites.forEach(sprite => sprite.render(this.#shaderProgram, screenAndCamera.float32array()));
+        this.#sprites.forEach(sprite => sprite.render(screenAndCamera.float32array()));
     }
 
 }
