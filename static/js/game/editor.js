@@ -1,6 +1,4 @@
 import PiekoszekEngine from '/js/engine/PiekoszekEngine.js'
-import Bus from "./Bus.js";
-import StandingBus from "./StandingBus.js";
 import Collider from "../engine/Collider.js";
 import Vector from "../engine/Vector.js";
 import EditorBus from "./EditorBus.js";
@@ -12,20 +10,20 @@ const game = new PiekoszekEngine(document.getElementById("canvas"), () => {
     const minCamera = 0.45;
     const maxCamera = 4;
 
-    game.addBehaviour( (params) => {
+    game.addBehaviour((params) => {
 
         if (params.keyDown("w")) {
-            game.camera.y+=cameraSpeed;
+            game.camera.y += cameraSpeed;
         }
         if (params.keyDown("s")) {
-            game.camera.y-=cameraSpeed;
+            game.camera.y -= cameraSpeed;
         }
 
         if (params.keyDown("a")) {
-            game.camera.x-=cameraSpeed;
+            game.camera.x -= cameraSpeed;
         }
         if (params.keyDown("d")) {
-            game.camera.x+=cameraSpeed;
+            game.camera.x += cameraSpeed;
         }
 
         if (params.keyDown("q")) {
@@ -45,7 +43,18 @@ const game = new PiekoszekEngine(document.getElementById("canvas"), () => {
             }
         }
 
-        if (params.keyDown("n")) {
+        const lastPressed = window.lastPressedSprite;
+        if (lastPressed !== undefined) {
+            if (params.keyDown("r")) {
+                lastPressed.angle+=3;
+            }
+
+            if (params.keyDown("t")) {
+                lastPressed.angle-=3;
+            }
+        }
+
+        if (params.keyDownThisFrame("n")) {
             addBus(params.screenRect);
         }
     });
@@ -62,8 +71,8 @@ const collider = new Collider(
 function addBus(rect) {
     const standingBus = game.createSprite("/assets/bus/bus.png", EditorBus,
         {
-            x: (game.camera.wx + rect.width/2) / game.camera.sx,
-            y: (game.camera.wy + rect.height/2) / game.camera.sy,
+            x: (game.camera.wx + rect.width / 2) / game.camera.sx,
+            y: (game.camera.wy + rect.height / 2) / game.camera.sy,
             sx: 0.5,
             sy: 0.5,
         });

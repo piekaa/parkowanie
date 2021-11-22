@@ -149,17 +149,21 @@ class PiekoszekEngine {
     #checkMouseCollisions() {
         const mouse = this.#updateParams.mouse();
         if (mouse.mousePressed) {
-            this.#movingColliders.forEach(collider => {
+            for (let i = 0; i < this.#movingColliders.length; i++){
+                const collider = this.#movingColliders[i];
                 if (collider.isInside(mouse.mouseWorldVector)) {
                     collider.sprite.onMousePress(mouse);
+                    return;
                 }
-            });
+            }
 
-            this.#notMovingColliders.forEach(collider => {
+            for (let i = 0; i < this.#notMovingColliders.length; i++){
+                const collider = this.#notMovingColliders[i];
                 if (collider.isInside(mouse.mouseWorldVector)) {
                     collider.sprite.onMousePress(mouse);
+                    return;
                 }
-            });
+            }
         }
     }
 
@@ -186,6 +190,9 @@ class PiekoszekEngine {
 class UpdateParams {
 
     #keys = [];
+
+    #justPressedKeys = [];
+
     screenRect;
 
     #camera;
@@ -204,6 +211,7 @@ class UpdateParams {
         this.#camera = camera;
         window.addEventListener("keydown", (event) => {
             this.#keys[event.key] = true;
+            this.#justPressedKeys.push(event.key);
         }, true);
 
         window.addEventListener("keyup", (event) => {
@@ -243,6 +251,10 @@ class UpdateParams {
         return keyState;
     }
 
+    keyDownThisFrame(keyCode) {
+        return this.#justPressedKeys.includes(keyCode);
+    }
+
     mouse() {
         return {
             x: this.#mx,
@@ -259,6 +271,7 @@ class UpdateParams {
     update() {
         this.#mouseJustReleased = false;
         this.#mouseJustPressed = false;
+        this.#justPressedKeys = [];
     }
 }
 
