@@ -15,6 +15,10 @@ class Vector {
         return new Vector(Math.cos(radian), Math.sin(radian)).normalized();
     }
 
+    static Direction(x1, y1, x2, y2) {
+        return new Vector(x2 - x1, y2 - y1);
+    }
+
     length() {
         return Math.sqrt(this.x * this.x + this.y * this.y);
     }
@@ -27,7 +31,7 @@ class Vector {
         const p = this.y / this.x;
         const x = Math.sqrt(1 / (p * p + 1));
         const y = p * x;
-        return new Vector(this.#copySign(x, this.x),this.#copySign(y, this.y));
+        return new Vector(this.#copySign(x, this.x), this.#copySign(y, this.y));
     }
 
     #copySign(a, b) {
