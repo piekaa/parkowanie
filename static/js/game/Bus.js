@@ -24,11 +24,11 @@ class Bus extends Sprite {
     #cameraLerp = 0.5;
     #cameraLerpSpeed = 0.07;
 
-    #frontLeftLight;
-    #frontRightLight;
+    #frontLeftLight = {};
+    #frontRightLight = {};
 
-    #rearLeftLight;
-    #rearRightLight;
+    #rearLeftLight = {};
+    #rearRightLight = {};
 
     addWheels(path) {
         this.#leftFrontWheel = super.addChild(path, Sprite, {x: 310, y: 0});

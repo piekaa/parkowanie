@@ -34,7 +34,7 @@ class PiekoszekEngine {
         this.#gl.blendFunc(this.#gl.SRC_ALPHA, this.#gl.ONE_MINUS_SRC_ALPHA);
 
         this.createShaderProgramPromise("/js/engine/shader/fragment.shader", "/js/engine/shader/vertex.shader")
-            .then(shaderProgram =>  {
+            .then(shaderProgram => {
                 this.#standardShaderProgram = shaderProgram;
                 setInterval(this.#update.bind(this), 30);
                 afterInitFunction();
@@ -114,6 +114,7 @@ class PiekoszekEngine {
         const rect = this.#canvas.getBoundingClientRect();
         this.#updateParams.screenRect = rect;
         this.#checkCollisions();
+        this.#checkMouseCollisions();
         this.#runUpdates();
         this.#render(rect);
     }
@@ -142,6 +143,23 @@ class PiekoszekEngine {
                 }
             }
 
+        }
+    }
+
+    #checkMouseCollisions() {
+        const mouse = this.#updateParams.mouse();
+        if (mouse.mousePressed) {
+            this.#movingColliders.forEach(collider => {
+                if (collider.isInside(mouse.mouseWorldVector)) {
+                    collider.sprite.onMousePress(mouse);
+                }
+            });
+
+            this.#notMovingColliders.forEach(collider => {
+                if (collider.isInside(mouse.mouseWorldVector)) {
+                    collider.sprite.onMousePress(mouse);
+                }
+            });
         }
     }
 
@@ -193,19 +211,28 @@ class UpdateParams {
         }, true);
 
         canvas.addEventListener("mousedown", (event) => {
-            this.#mouseJustPressed = true;
-            this.#mousePressed = true;
-            this.#mx = event.offsetX;
-            this.#my = this.screenRect.height - event.offsetY;
-
-            this.#mwx = (-this.#camera.wx + this.#mx) / this.#camera.sx;
-            this.#mwy = (-this.#camera.wy + this.#my) / this.#camera.sy;
+            this.#calculateMouse(event);
         }, false);
 
         canvas.addEventListener("mouseup", (event) => {
             this.#mousePressed = false;
             this.#mouseJustReleased = true;
         }, false);
+
+        canvas.addEventListener("mousemove", (event) => {
+            if (this.#mousePressed) {
+                this.#calculateMouse(event);
+            }
+        }, false);
+    }
+
+    #calculateMouse(event) {
+        this.#mouseJustPressed = true;
+        this.#mousePressed = true;
+        this.#mx = event.offsetX;
+        this.#my = this.screenRect.height - event.offsetY;
+        this.#mwx = (this.#camera.wx + this.#mx) / this.#camera.sx;
+        this.#mwy = (this.#camera.wy + this.#my) / this.#camera.sy;
     }
 
     keyDown(keyCode) {
