@@ -15,6 +15,8 @@ class Sprite {
     #rotation
     #scale
 
+    #transformation
+
     #positionBuffer
     #positionBufferData
 
@@ -38,7 +40,7 @@ class Sprite {
     sx = 1;
     sy = 1;
 
-    #temp = 0
+    #colliders = [];
 
     constructor(imgPath, gl, game) {
         this.#gl = gl;
@@ -90,14 +92,18 @@ class Sprite {
         this.#pivot = Matrix2D.Translation(-x, -y);
     }
 
-    addChild(imagePath, Type = Sprite, transformation = {x : 0, y: 0, sx: 1, sy: 1}) {
+    addChild(imagePath, Type = Sprite, transformation = {x: 0, y: 0, sx: 1, sy: 1}) {
         const sprite = this.#game.newSprite(imagePath, Type, transformation);
         this.#children.push(sprite);
         return sprite;
     }
 
+    addCollider(collider) {
+        this.#colliders.push(collider);
+    }
+
     followVector() {
-        return new Vector(this.wx,this.wy);
+        return new Vector(this.wx, this.wy);
     }
 
     worldPositionVector() {
@@ -139,11 +145,13 @@ class Sprite {
         this.wx = transformation.x();
         this.wy = transformation.y();
 
+        this.#colliders.forEach(collider => collider.update(transformation));
+
         if (this.renderChildrenFirst) {
             this.#children.forEach(child => child.render(shaderProgram, screenAndCameraArray, transformation));
         }
 
-        if( this.visible) {
+        if (this.visible) {
 
             const vertexPositionLocation = this.#gl.getAttribLocation(shaderProgram, 'vertexPosition');
             const texcoordLocation = this.#gl.getAttribLocation(shaderProgram, 'vertexTextureCoordinate');
