@@ -24,8 +24,6 @@ const collider = new Collider(
         new Vector(398,1),
     ]);
 
-standingBus.addCollider(collider);
-
 const bus = game.createSprite("/assets/bus/bus.png", Bus,
     {
         x: 200,
@@ -34,6 +32,8 @@ const bus = game.createSprite("/assets/bus/bus.png", Bus,
         sy: 0.5
     });
 bus.addWheels("/assets/bus/wheel.png");
+
+bus.addCollider(collider);
 
 const cameraZoomSpeed = 0.03;
 const minCamera = 0.45;
