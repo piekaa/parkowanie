@@ -6,13 +6,21 @@ class Camera {
     sx = 1;
     sy = 1;
 
+    wx = 0;
+    wy = 0;
+
     #toFollow;
 
     matrix(rect) {
-        return Matrix2D.Translation(rect.width / 2, rect.height / 2)
+        const matrix =  Matrix2D.Translation(rect.width / 2, rect.height / 2)
             .multiply(Matrix2D.Scale(this.sx, this.sy))
             .multiply(Matrix2D.Translation(-rect.width / 2, -rect.height / 2))
             .multiply(Matrix2D.Translation(-this.x, -this.y));
+
+        this.wx = matrix.x();
+        this.wy = matrix.y();
+
+        return matrix;
     }
 
     follow(sprite) {

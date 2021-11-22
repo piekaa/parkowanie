@@ -130,7 +130,7 @@ class Bus extends Sprite {
         this.x = newPosition.x;
         this.y = newPosition.y;
 
-        this.angle += this.#wheelsAngle * this.#speed / 60;
+        this.angle += this.#wheelsAngle * this.#speed / 50;
     }
 
 

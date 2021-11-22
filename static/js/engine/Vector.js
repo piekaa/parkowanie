@@ -63,6 +63,10 @@ class Vector {
         );
     }
 
+    dot(vector) {
+        return this.x * vector.x + this.y * vector.y;
+    }
+
 }
 
 export default Vector
