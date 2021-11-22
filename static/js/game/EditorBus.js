@@ -10,12 +10,18 @@ class EditorBus extends Bus {
             const mouse = params.mouse();
             this.x = mouse.wx;
             this.y = mouse.wy;
+
+            if(mouse.mousePressed) {
+                this.#pressedTime++;
+            }
         }
 
+        this.#pressedTime--;
     }
 
     onMousePress(mouse) {
         this.#pressedTime = 3;
+        window.lastPressedSprite = this;
     }
 }
 
