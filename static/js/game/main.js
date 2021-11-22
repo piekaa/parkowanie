@@ -2,7 +2,6 @@ import PiekoszekEngine from '/js/engine/2d.js'
 import Bus from "./Bus.js";
 import StandingBus from "./StandingBus.js";
 import Sprite from "../engine/Sprite.js";
-import Vector from "../engine/Vector.js";
 
 const game = new PiekoszekEngine(document.getElementById("canvas"));
 
@@ -34,17 +33,17 @@ const topRight = game.createSprite("/assets/bus/wheel.png", Sprite, {
     y: 900,
 })
 
-game.createSprite("/assets/bus/wheel.png", Sprite, {
+const topLeft = game.createSprite("/assets/bus/wheel.png", Sprite, {
     x: 700,
     y: 900,
 })
 
-const leftBottom = game.createSprite("/assets/bus/wheel.png", Sprite, {
+const botLeft = game.createSprite("/assets/bus/wheel.png", Sprite, {
     x: 700,
     y: 400,
 })
 
-game.createSprite("/assets/bus/wheel.png", Sprite, {
+const botRight = game.createSprite("/assets/bus/wheel.png", Sprite, {
     x: 900,
     y: 400,
 })
@@ -70,16 +69,17 @@ game.addBehaviour((params) => {
     const mouse = params.mouse();
     if (mouse.mouseJustPressed) {
 
-        const botToMouse = Vector.Direction(leftBottom.wx, leftBottom.wy, mouse.wx, mouse.wy);
-        const topToMouse = Vector.Direction(topRight.wx, topRight.wy, mouse.wx, mouse.wy);
+        const mouseVector = mouse.mouseWorldVector;
 
-        // console.log("Bot:");
-        // botToMouse.display();
-        //
-        // console.log("Top:");
-        // topToMouse.display();
+        const left = topLeft.worldPositionVector().mid(botLeft);
+        const right = topRight.worldPositionVector().mid(botRight);
 
-        console.log(`Dot: ${botToMouse.dot(topToMouse)}`);
+        const leftToMouse = left.direction(mouseVector);
+        const rightToMouse = right.direction(mouseVector);
+
+        rightToMouse.display();
+
+        console.log(`Dot: ${leftToMouse.dot(rightToMouse)}`);
 
     }
 

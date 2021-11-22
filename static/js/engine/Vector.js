@@ -71,6 +71,17 @@ class Vector {
         return this.x * vector.x + this.y * vector.y;
     }
 
+    mid(vector) {
+        return new Vector(this.x + vector.x, this.y + vector.y).multiply(0.5);
+    }
+
+    toPoint(x, y) {
+        return new Vector(x - this.x, y - this.y);
+    }
+
+    direction(vector) {
+        return Vector.Direction(this.x, this.y, vector.x, vector.y);
+    }
 }
 
 export default Vector
