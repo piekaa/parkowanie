@@ -4,13 +4,24 @@ class Collider {
 
     #points = []
     #worldPoints = [];
+    sprite;
 
     constructor(points) {
         this.#points = points;
         if (!points.length || points.length < 3) {
             throw new Error("Collider must have at least 3 points")
         }
-        points.forEach(p => this.#worldPoints.push(p.copy()));
+        this.#worldPoints = this.#copyPoints();
+    }
+
+    copy() {
+        return new Collider(this.#copyPoints());
+    }
+
+    #copyPoints() {
+        let newPoints = [];
+        this.#points.forEach(p => newPoints.push(p.copy()));
+        return newPoints;
     }
 
 
@@ -22,6 +33,24 @@ class Collider {
         }
     }
 
+    collides(collider) {
+        for (let i = 0; i < collider.#worldPoints.length; i++) {
+            const p = collider.#worldPoints[i];
+            if (this.isInside(p)) {
+                return true;
+            }
+        }
+
+        for (let i = 0; i < this.#worldPoints.length; i++) {
+            const p = this.#worldPoints[i];
+            if (collider.isInside(p)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     isInside(point) {
         let pointsAndNormals = [];
         for (let i = 0; i < this.#worldPoints.length - 1; i++) {
@@ -31,7 +60,7 @@ class Collider {
 
         for (let i = 0; i < pointsAndNormals.length; i++) {
             const pointAndNormal = pointsAndNormals[i];
-            if (point.direction(pointAndNormal.point).dot(pointAndNormal.normal) <= 0) {
+            if (point.direction(pointAndNormal.point).dot(pointAndNormal.normal) < 0) {
                 return false;
             }
         }

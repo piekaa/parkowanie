@@ -15,8 +15,6 @@ class Sprite {
     #rotation
     #scale
 
-    #transformation
-
     #positionBuffer
     #positionBufferData
 
@@ -41,6 +39,10 @@ class Sprite {
     sy = 1;
 
     #colliders = [];
+
+    moving = false;
+
+    #colorArray = new Float32Array([1,1,1,1]);
 
     constructor(imgPath, gl, game) {
         this.#gl = gl;
@@ -84,6 +86,10 @@ class Sprite {
         this.#img.src = imgPath;
     }
 
+    setColor(color) {
+        this.#colorArray = new Float32Array(color);
+    }
+
     #isPowerOf2(value) {
         return (value & (value - 1)) === 0;
     }
@@ -100,6 +106,13 @@ class Sprite {
 
     addCollider(collider) {
         this.#colliders.push(collider);
+        collider.sprite = this;
+
+        if( this.moving) {
+            this.#game.addMovingCollider(collider);
+        } else {
+            this.#game.addNotMovingCollider(collider);
+        }
     }
 
     followVector() {
@@ -125,6 +138,10 @@ class Sprite {
     updateChildren() {
         this.#children.forEach(child => child.update());
         this.#children.forEach(child => child.updateChildren());
+    }
+
+    onCollision() {
+
     }
 
     render(shaderProgram, screenAndCameraArray, parentTransformation = Matrix2D.Identity()) {
@@ -197,6 +214,11 @@ class Sprite {
                 this.#gl.getUniformLocation(shaderProgram, "screenAndCamera"),
                 false,
                 screenAndCameraArray);
+
+            this.#gl.uniform4fv(
+                this.#gl.getUniformLocation(shaderProgram, "color"),
+                this.#colorArray
+            )
 
 
             this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4);
