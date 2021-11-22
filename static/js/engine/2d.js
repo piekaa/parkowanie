@@ -1,6 +1,7 @@
 import Sprite from "./Sprite.js";
 import Matrix2D from "./Matrix.js";
 import Camera from "./Camera.js";
+import Vector from "./Vector.js";
 
 class PiekoszekEngine {
 
@@ -171,6 +172,7 @@ class UpdateParams {
             mousePressed: this.#mousePressed,
             mouseJustPressed: this.#mouseJustPressed,
             mouseJustReleased: this.#mouseJustReleased,
+            mouseWorldVector: new Vector(this.#mwx, this.#mwy)
         }
     }
 

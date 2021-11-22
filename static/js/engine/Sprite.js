@@ -100,6 +100,10 @@ class Sprite {
         return new Vector(this.wx,this.wy);
     }
 
+    worldPositionVector() {
+        return new Vector(this.wx, this.wy);
+    }
+
     update() {
 
     }
