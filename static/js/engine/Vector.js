@@ -19,6 +19,10 @@ class Vector {
         return new Vector(x2 - x1, y2 - y1);
     }
 
+    static FromMatrix(matrix) {
+        return new Vector(matrix.x(), matrix.y());
+    }
+
     length() {
         return Math.sqrt(this.x * this.x + this.y * this.y);
     }
@@ -89,6 +93,10 @@ class Vector {
 
     #n() {
         return new Vector(-this.y, this.x);
+    }
+
+    copy() {
+        return new Vector(this.x, this.y);
     }
 }
 

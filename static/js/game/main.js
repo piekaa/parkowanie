@@ -2,6 +2,8 @@ import PiekoszekEngine from '/js/engine/2d.js'
 import Bus from "./Bus.js";
 import StandingBus from "./StandingBus.js";
 import Sprite from "../engine/Sprite.js";
+import Collider from "../engine/Collider.js";
+import Vector from "../engine/Vector.js";
 
 const game = new PiekoszekEngine(document.getElementById("canvas"));
 
@@ -10,9 +12,19 @@ const standingBus = game.createSprite("/assets/bus/bus.png", StandingBus,
         x: 500,
         y: 200,
         sx: 0.5,
-        sy: 0.5
+        sy: 0.5,
     });
 standingBus.addWheels("/assets/bus/wheel.png");
+
+const collider = new Collider(
+    [
+        new Vector(1,1),
+        new Vector(1,78)
+        ,new Vector(398,78),
+        new Vector(398,1),
+    ]);
+
+standingBus.addCollider(collider);
 
 const bus = game.createSprite("/assets/bus/bus.png", Bus,
     {
@@ -68,19 +80,8 @@ game.addBehaviour((params) => {
 
     const mouse = params.mouse();
     if (mouse.mouseJustPressed) {
-
         const mouseVector = mouse.mouseWorldVector;
-        const normal = botLeft.worldPositionVector().normal(topLeft.worldPositionVector());
-        const mouseToLeft = mouseVector.direction(botLeft.worldPositionVector());
-        console.log("Normal");
-        normal.display();
-        console.log("Mouse to left");
-        mouseToLeft.display();
-        console.log();
-        console.log();
-        console.log();
-        console.log(`Dot: ${mouseToLeft.dot(normal)}`);
-
+        console.log(collider.isInside(mouseVector));
     }
 
 })
