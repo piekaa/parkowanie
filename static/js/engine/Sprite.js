@@ -24,6 +24,8 @@ class Sprite {
 
     renderChildrenFirst = false;
 
+    #game
+
     x = 0;
     y = 0;
 
@@ -38,8 +40,9 @@ class Sprite {
 
     #temp = 0
 
-    constructor(imgPath, gl) {
+    constructor(imgPath, gl, game) {
         this.#gl = gl;
+        this.#game = game;
         this.#img = new Image();
         this.#img.onload = () => {
             this.texture = gl.createTexture();
@@ -85,11 +88,10 @@ class Sprite {
 
     setPivot(x, y) {
         this.#pivot = Matrix2D.Translation(-x, -y);
-        // this.#pivot = Matrix2D.Translation(0, 0);
     }
 
-    addChild(imagePath, Type = Sprite) {
-        const sprite = new Type(imagePath, this.#gl);
+    addChild(imagePath, Type = Sprite, transformation = {x : 0, y: 0, sx: 1, sy: 1}) {
+        const sprite = this.#game.newSprite(imagePath, Type, transformation);
         this.#children.push(sprite);
         return sprite;
     }

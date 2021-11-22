@@ -17,9 +17,9 @@ class PiekoszekEngine {
     constructor(canvas) {
         this.#canvas = canvas;
 
-        this.#updateParams = new UpdateParams();
-
         this.camera = new Camera();
+
+        this.#updateParams = new UpdateParams(canvas, this.camera);
 
         this.#canvas.width = 1000;
         this.#canvas.height = 1000;
@@ -67,8 +67,21 @@ class PiekoszekEngine {
         return shader;
     }
 
-    createSprite(imagePath, Type = Sprite) {
-        const sprite = new Type(imagePath, this.#gl);
+    newSprite(imagePath, Type = Sprite, transformation) {
+        const sprite = new Type(imagePath, this.#gl, this);
+
+        transformation.sx = transformation.sx || 1;
+        transformation.sy = transformation.sy || 1;
+
+        sprite.x = transformation.x;
+        sprite.y = transformation.y;
+        sprite.sx = transformation.sx;
+        sprite.sy = transformation.sy;
+        return sprite;
+    }
+
+    createSprite(imagePath, Type = Sprite, transformation = {x : 0, y: 0, sx: 1, sy: 1}) {
+        const sprite = this.newSprite(imagePath, Type, transformation);
         this.#sprites.push(sprite);
         return sprite;
     }
@@ -89,6 +102,8 @@ class PiekoszekEngine {
 
         this.camera.update(this.#updateParams);
 
+        this.#updateParams.update();
+
         const screenAndCamera = Matrix2D.Scale(2/rect.width, 2/rect.height).multiply(Matrix2D.Translation(-rect.width/2, -rect.height/2)).multiply(this.camera.matrix(rect));
 
         this.#sprites.forEach(sprite => sprite.render(this.#shaderProgram, screenAndCamera.float32array()));
@@ -101,7 +116,20 @@ class UpdateParams {
     #keys = [];
     screenRect;
 
-    constructor() {
+    #camera;
+
+    #mousePressed = false;
+    #mouseJustPressed = false;
+    #mouseJustReleased = false;
+
+    #mx = 0;
+    #my = 0;
+
+    #mwx = 0;
+    #mwy = 0;
+
+    constructor(canvas, camera) {
+        this.#camera = camera;
         window.addEventListener("keydown", (event) => {
             this.#keys[event.key] = true;
         }, true);
@@ -109,6 +137,21 @@ class UpdateParams {
         window.addEventListener("keyup", (event) => {
             this.#keys[event.key] = false;
         }, true);
+
+        canvas.addEventListener("mousedown", (event) => {
+            this.#mouseJustPressed = true;
+            this.#mousePressed = true;
+            this.#mx = event.offsetX;
+            this.#my = this.screenRect.height - event.offsetY;
+
+            this.#mwx = (-this.#camera.wx + this.#mx) / this.#camera.sx;
+            this.#mwy = (-this.#camera.wy + this.#my) / this.#camera.sy;
+        }, false);
+
+        canvas.addEventListener("mouseup", (event) => {
+            this.#mousePressed = false;
+            this.#mouseJustReleased = true;
+        }, false);
     }
 
     keyDown(keyCode) {
@@ -116,7 +159,24 @@ class UpdateParams {
         if(keyState === undefined) {
             return false;
         }
-        return keyState
+        return keyState;
+    }
+
+    mouse() {
+        return {
+            x: this.#mx,
+            y: this.screenRect.height - this.#my,
+            wx: this.#mwx,
+            wy: this.#mwy,
+            mousePressed: this.#mousePressed,
+            mouseJustPressed: this.#mouseJustPressed,
+            mouseJustReleased: this.#mouseJustReleased,
+        }
+    }
+
+    update() {
+        this.#mouseJustReleased = false;
+        this.#mouseJustPressed = false;
     }
 }
 
