@@ -146,6 +146,10 @@ class Sprite {
 
     }
 
+    onMousePress(mouse) {
+
+    }
+
     render(screenAndCameraArray, parentTransformation = Matrix2D.Identity()) {
         if (!this.#ready) {
             return;
