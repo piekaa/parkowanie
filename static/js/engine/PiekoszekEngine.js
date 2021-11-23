@@ -19,12 +19,13 @@ class PiekoszekEngine {
     constructor(canvas, afterInitFunction) {
         this.#canvas = canvas;
 
+
         this.camera = new Camera();
 
         this.#updateParams = new UpdateParams(canvas, this.camera);
 
-        this.#canvas.width = 1000;
-        this.#canvas.height = 1000;
+        this.#canvas.width = 1920;
+        this.#canvas.height = 1080;
 
         this.#gl = canvas.getContext("webgl");
         this.#gl.clearColor(1, 0, 0, 1);
