@@ -14,7 +14,7 @@ class Bus extends Sprite {
     #speed = 0;
 
     #acceleration = 0.05;
-    #deceleration = 0.3;
+    #deceleration = 0.15;
 
     #speedLimit = 3;
 

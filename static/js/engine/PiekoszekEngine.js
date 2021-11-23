@@ -148,18 +148,17 @@ class PiekoszekEngine {
 
     #checkMouseCollisions() {
         const mouse = this.#updateParams.mouse();
-        if (mouse.mousePressed) {
-            for (let i = 0; i < this.#movingColliders.length; i++){
+        if (mouse.justPressed) {
+            for (let i = 0; i < this.#movingColliders.length; i++) {
                 const collider = this.#movingColliders[i];
-                if (collider.isInside(mouse.mouseWorldVector)) {
+                if (collider.isInside(mouse.worldVector)) {
                     collider.sprite.onMousePress(mouse);
                     return;
                 }
             }
-
-            for (let i = 0; i < this.#notMovingColliders.length; i++){
+            for (let i = 0; i < this.#notMovingColliders.length; i++) {
                 const collider = this.#notMovingColliders[i];
-                if (collider.isInside(mouse.mouseWorldVector)) {
+                if (collider.isInside(mouse.worldVector)) {
                     collider.sprite.onMousePress(mouse);
                     return;
                 }
@@ -201,6 +200,8 @@ class UpdateParams {
     #mouseJustPressed = false;
     #mouseJustReleased = false;
 
+    #mouseButton = 0;
+
     #mx = 0;
     #my = 0;
 
@@ -219,12 +220,16 @@ class UpdateParams {
         }, true);
 
         canvas.addEventListener("mousedown", (event) => {
+            this.#mousePressed = true;
+            this.#mouseJustPressed = true;
+            this.#mouseButton = event.button;
             this.#calculateMouse(event);
         }, false);
 
         canvas.addEventListener("mouseup", (event) => {
             this.#mousePressed = false;
             this.#mouseJustReleased = true;
+            this.#mouseButton = -1;
         }, false);
 
         canvas.addEventListener("mousemove", (event) => {
@@ -235,8 +240,6 @@ class UpdateParams {
     }
 
     #calculateMouse(event) {
-        this.#mouseJustPressed = true;
-        this.#mousePressed = true;
         this.#mx = event.offsetX;
         this.#my = this.screenRect.height - event.offsetY;
         this.#mwx = (this.#camera.wx + this.#mx) / this.#camera.sx;
@@ -261,10 +264,12 @@ class UpdateParams {
             y: this.screenRect.height - this.#my,
             wx: this.#mwx,
             wy: this.#mwy,
-            mousePressed: this.#mousePressed,
-            mouseJustPressed: this.#mouseJustPressed,
-            mouseJustReleased: this.#mouseJustReleased,
-            mouseWorldVector: new Vector(this.#mwx, this.#mwy)
+            pressed: this.#mousePressed,
+            justPressed: this.#mouseJustPressed,
+            justReleased: this.#mouseJustReleased,
+            worldVector: new Vector(this.#mwx, this.#mwy),
+            leftButton: this.#mouseButton === 0,
+            rightButton: this.#mouseButton === 2,
         }
     }
 

@@ -45,13 +45,6 @@ const game = new PiekoszekEngine(document.getElementById("canvas"), () => {
 
         const lastPressed = window.lastPressedSprite;
         if (lastPressed !== undefined) {
-            if (params.keyDown("r")) {
-                lastPressed.angle+=3;
-            }
-
-            if (params.keyDown("t")) {
-                lastPressed.angle-=3;
-            }
         }
 
         if (params.keyDownThisFrame("n")) {
