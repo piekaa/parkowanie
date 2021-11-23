@@ -6,7 +6,7 @@ class StandingBus extends Bus {
 
     update(params) {
         this.turnOffIn--;
-        if( this.turnOffIn < 0 ) {
+        if (this.turnOffIn < 0) {
             this.turnOffLights();
         }
     }

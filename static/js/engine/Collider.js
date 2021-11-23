@@ -74,6 +74,22 @@ class Collider {
         };
     }
 
+    serialize() {
+        let points = [];
+        this.#points.forEach(point => {
+            points.push({x: point.x, y: point.y});
+        })
+        return points;
+    }
+
+    static Deserialize(colliderItem) {
+        let points = [];
+        colliderItem.points.forEach(point => {
+            points.push(new Vector(point.x, point.y));
+        })
+        return new Collider(points);
+    }
+
 }
 
 export default Collider

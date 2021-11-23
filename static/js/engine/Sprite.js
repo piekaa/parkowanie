@@ -1,5 +1,6 @@
 import Matrix2D from "./Matrix.js";
 import Vector from "./Vector.js";
+import Collider from "./Collider.js";
 
 class Sprite {
 
@@ -44,11 +45,17 @@ class Sprite {
 
     moving = false;
 
-    #colorArray = new Float32Array([1,1,1,1]);
+    #colorArray = new Float32Array([1, 1, 1, 1]);
+
+    #imagePath;
+
+    afterInit = () => {
+    };
 
     constructor(imgPath, gl, game) {
         this.#gl = gl;
         this.game = game;
+        this.#imagePath = imgPath;
         this.#img = new Image();
         this.#img.onload = () => {
             this.texture = gl.createTexture();
@@ -63,6 +70,7 @@ class Sprite {
                 gl.generateMipmap(gl.TEXTURE_2D);
             } else {
                 // gl.NEAREST is also allowed, instead of gl.LINEAR, as neither mipmap.
+                // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                 // Prevents s-coordinate wrapping (repeating).
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -84,6 +92,7 @@ class Sprite {
             this.setPivot(this.#img.width / 2, this.#img.height / 2);
             this.#ready = true;
             this.init();
+            this.afterInit();
         }
         this.#img.src = imgPath;
     }
@@ -110,7 +119,7 @@ class Sprite {
         this.#colliders.push(collider);
         collider.sprite = this;
 
-        if( this.moving) {
+        if (this.moving) {
             this.game.addMovingCollider(collider);
         } else {
             this.game.addNotMovingCollider(collider);
@@ -236,6 +245,39 @@ class Sprite {
         }
     }
 
+    serialize() {
+
+        let serializedColliders = [];
+        this.#colliders.forEach(collider => {
+            serializedColliders.push(collider.serialize());
+        })
+
+        return {
+            x: this.x,
+            y: this.y,
+            sx: this.sx,
+            sy: this.sy,
+            angle: this.angle,
+            color: Array.from(this.#colorArray),
+            type: this.constructor.name,
+            imagePath: this.#imagePath,
+            moving: this.moving,
+            colliders: serializedColliders,
+        };
+    }
+
+    deserialize(item) {
+        this.x = item.x;
+        this.y = item.y;
+        this.sx = item.sx;
+        this.sy = item.sy;
+        this.angle = item.angle;
+        this.setColor(new Float32Array(item.color));
+        this.moving = item.moving;
+        item.colliders.forEach(serializedCollider => {
+            this.addCollider(new Collider(serializedCollider.map(Vector.FromObject)));
+        })
+    }
 }
 
 export default Sprite

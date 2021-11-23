@@ -30,7 +30,13 @@ class Bus extends Sprite {
     #rearLeftLight = {};
     #rearRightLight = {};
 
+    #wheelImagePath;
+    #lightMaskImagePath;
+
     addWheels(path) {
+
+        this.#wheelImagePath = path;
+
         this.#leftFrontWheel = super.addChild(path, Sprite, {x: 310, y: 0});
         this.#rightFrontWheel = super.addChild(path, Sprite, {x: 310, y: 80});
 
@@ -46,6 +52,7 @@ class Bus extends Sprite {
     }
 
     addLights(path) {
+        this.#lightMaskImagePath = path;
         this.#frontRightLight = super.addChild(path, Sprite, {x: 448, y: 15});
         this.#frontLeftLight = super.addChild(path, Sprite, {x: 448, y: 75});
 
@@ -161,7 +168,19 @@ class Bus extends Sprite {
         this.angle += this.#wheelsAngle * this.#speed / 50;
     }
 
+    serialize() {
+        let item = super.serialize();
+        item.wheelImagePath = this.#wheelImagePath;
+        item.lightMaskImagePath = this.#lightMaskImagePath;
+        return item;
+    }
 
+    deserialize(item) {
+        super.deserialize(item);
+        this.addWheels(item.wheelImagePath);
+        this.addLights(item.lightMaskImagePath);
+
+    }
 }
 
 export default Bus

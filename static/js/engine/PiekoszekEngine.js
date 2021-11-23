@@ -53,6 +53,16 @@ class PiekoszekEngine {
             .then(() => this.#initShaderProgram(fragmentShader, vertexShader))
     }
 
+    getSpriteByType(Type) {
+        for (let i = 0; i < this.#sprites.length; i++) {
+            const sprite = this.#sprites[i];
+            if (sprite.constructor.name === Type.prototype.constructor.name) {
+                return sprite;
+            }
+        }
+        return undefined;
+    }
+
     #initShaderProgram(fragmentShader, vertexShader) {
         const shaderProgram = this.#gl.createProgram();
         this.#gl.attachShader(shaderProgram, vertexShader);
