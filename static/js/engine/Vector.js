@@ -23,6 +23,10 @@ class Vector {
         return new Vector(matrix.x(), matrix.y());
     }
 
+    toAngleDegrees() {
+        return Math.atan2(this.y, this.x) * 57.2957795;
+    }
+
     length() {
         return Math.sqrt(this.x * this.x + this.y * this.y);
     }
