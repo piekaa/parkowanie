@@ -31,7 +31,18 @@ class Bus extends Sprite {
     #rearRightLight = {};
 
     #wheelImagePath;
+    #whiteImagePath;
     #lightMaskImagePath;
+
+    #whiteTexture;
+
+    loadWhite(whiteImagePath) {
+        this.#whiteImagePath = whiteImagePath;
+        this.loadTexture(whiteImagePath, (texture) => {
+            this.#whiteTexture = texture;
+            this.ready = true;
+        });
+    }
 
     addWheels(path) {
 
@@ -70,6 +81,7 @@ class Bus extends Sprite {
     }
 
     init() {
+        this.ready = false;
         this.renderChildrenFirst = true;
         this.setPivot(90, 39);
         this.visible = false;
@@ -168,15 +180,23 @@ class Bus extends Sprite {
         this.angle += this.#wheelsAngle * this.#speed / 50;
     }
 
+    renderStep(gl) {
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, this.#whiteTexture);
+        gl.uniform1i(gl.getUniformLocation(this.shaderProgram, "whiteTexture"), 1);
+    }
+
     serialize() {
         let item = super.serialize();
         item.wheelImagePath = this.#wheelImagePath;
         item.lightMaskImagePath = this.#lightMaskImagePath;
+        item.wheelImagePath = this.#wheelImagePath;
         return item;
     }
 
     deserialize(item) {
         super.deserialize(item);
+        this.loadWhite(item.wheelImagePath);
         this.addWheels(item.wheelImagePath);
         this.addLights(item.lightMaskImagePath);
 

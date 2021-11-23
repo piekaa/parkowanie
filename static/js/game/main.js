@@ -12,7 +12,6 @@ LevelLoader.Load(document.getElementById("canvas"),
     [Bus, StandingBus],
     (game) => {
         const bus = game.getSpriteByType(Bus);
-        console.log(bus);
         game.camera.follow(bus);
 
         const cameraZoomSpeed = 0.03;

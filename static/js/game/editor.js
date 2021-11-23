@@ -93,16 +93,20 @@ function addBus(Type, rect = {width: 0, height: 0}) {
         [0.06, 0.01, 0.50, 1]
     ];
 
-    const bus = game.createSprite("/assets/bus/bus.png", Type,
+    const bus = game.createSprite("/assets/bus/bus-colors.png", Type,
         {
             x: (game.camera.wx + rect.width / 2) / game.camera.sx,
             y: (game.camera.wy + rect.height / 2) / game.camera.sy,
             sx: 0.5,
             sy: 0.5,
         });
+    bus.afterInit = () => {
+        bus.loadWhite("/assets/bus/bus-white.png");
+        bus.addWheels("/assets/bus/wheel.png");
+        bus.addLights("/assets/bus/lightMask.png");
+    }
+
     const currentCollider = collider.copy();
-    bus.addWheels("/assets/bus/wheel.png");
-    bus.addLights("/assets/bus/lightMask.png");
     bus.addCollider(currentCollider);
     bus.setColor(colors[Math.floor(Math.random() * colors.length)]);
     EditorTransformer.Transform(bus);

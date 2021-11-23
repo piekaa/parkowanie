@@ -24,7 +24,6 @@ class Vector {
     }
 
     static FromObject(obj) {
-        console.log(obj);
         return new Vector(obj.x, obj.y);
     }
 

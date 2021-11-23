@@ -7,7 +7,7 @@ class Sprite {
     #img;
     #gl
 
-    #ready = false;
+    ready = false;
 
     texture;
 
@@ -56,10 +56,33 @@ class Sprite {
         this.#gl = gl;
         this.game = game;
         this.#imagePath = imgPath;
+        this.loadTexture(imgPath, (texture) => {
+            this.texture = texture;
+            const pos_and_tex = [
+                0, 0, 0, 1,
+                0, this.#img.height, 0, 0,
+                this.#img.width, 0, 1, 1,
+                this.#img.width, this.#img.height, 1, 0,
+            ]
+
+            this.#positionBuffer = gl.createBuffer();
+            this.#positionBufferData = new Float32Array(pos_and_tex);
+
+
+            this.setPivot(this.#img.width / 2, this.#img.height / 2);
+            this.ready = true;
+            this.init();
+            this.afterInit();
+        });
+
+    }
+
+    loadTexture(imagePath, onload) {
+        const gl = this.#gl;
         this.#img = new Image();
         this.#img.onload = () => {
-            this.texture = gl.createTexture();
-            gl.bindTexture(gl.TEXTURE_2D, this.texture);
+            const texture = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, texture);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.#img);
 
             // WebGL1 has different requirements for power of 2 images
@@ -77,24 +100,9 @@ class Sprite {
                 // Prevents t-coordinate wrapping (repeating).
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
             }
-
-            const pos_and_tex = [
-                0, 0, 0, 1,
-                0, this.#img.height, 0, 0,
-                this.#img.width, 0, 1, 1,
-                this.#img.width, this.#img.height, 1, 0,
-            ]
-
-            this.#positionBuffer = gl.createBuffer();
-            this.#positionBufferData = new Float32Array(pos_and_tex);
-
-
-            this.setPivot(this.#img.width / 2, this.#img.height / 2);
-            this.#ready = true;
-            this.init();
-            this.afterInit();
+            onload(texture);
         }
-        this.#img.src = imgPath;
+        this.#img.src = imagePath;
     }
 
     setColor(color) {
@@ -159,8 +167,12 @@ class Sprite {
 
     }
 
+    renderStep(gl, transformation) {
+
+    }
+
     render(screenAndCameraArray, parentTransformation = Matrix2D.Identity()) {
-        if (!this.#ready) {
+        if (!this.ready) {
             return;
         }
 
@@ -219,6 +231,7 @@ class Sprite {
             this.#gl.bindTexture(this.#gl.TEXTURE_2D, this.texture)
             this.#gl.uniform1i(this.#gl.getUniformLocation(this.shaderProgram, "sprite"), 0)
 
+            this.renderStep(this.#gl, transformation);
 
             this.#gl.uniformMatrix3fv(
                 this.#gl.getUniformLocation(this.shaderProgram, "transformation"),
