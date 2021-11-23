@@ -8,8 +8,6 @@
     <link rel="icon" href="data:,">
 
     <style>
-
-
         .game {
             display: flex;
             justify-content: center;
@@ -23,6 +21,11 @@
             border: 1px black solid;
         }
 
+        textarea {
+            width: 80%;
+            height: 500px;
+        }
+
     </style>
 
 </head>
@@ -32,7 +35,15 @@
     <canvas id="canvas" oncontextmenu="return false;">
     </canvas>
 
+
     <div>n - dodaj bus</div>
+    <div>k - serializuj</div>
+
+    <button id="try">Wypróbuj</button>
+
+    <textarea id="serialized">
+
+    </textarea>
 
 </div>
 
