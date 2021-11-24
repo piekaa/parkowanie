@@ -14,18 +14,23 @@ class Bus extends Sprite {
     #rearLeftLight = {};
     #rearRightLight = {};
 
-    #wheelImagePath;
     #lightMaskImagePath;
 
     wheelsAngle = 0;
 
     addWheels() {
         const col = [0.09, 0.09, 0.09, 1];
-        this.#leftFrontWheel = super.addPixelChild({x: 310, y: 0, sx: 40, sy: 10, color: col});
-        this.#rightFrontWheel = super.addPixelChild({x: 310, y: 80, sx: 40, sy: 10, color: col});
+        this.#leftFrontWheel = super.addPixelChild({x: 310, y: 0, color: col});
+        this.#leftFrontWheel.addPixelChild({sx: 40, sy: 10, color: col})
 
-        this.#leftRearWheel = super.addPixelChild({x: 90, y: 0, sx: 40, sy: 10, color: col});
-        this.#rightRearWheel = super.addPixelChild({x: 90, y: 80, sx: 40, sy: 10, color: col});
+        this.#rightFrontWheel = super.addPixelChild({x: 310, y: 80, color: col});
+        this.#rightFrontWheel.addPixelChild({sx: 40, sy: 10, color: col})
+
+        this.#leftRearWheel = super.addPixelChild({x: 90, y: 0, color: col});
+        this.#leftRearWheel.addPixelChild({sx: 40, sy: 10, color: col})
+
+        this.#rightRearWheel = super.addPixelChild({x: 90, y: 80, color: col});
+        this.#rightRearWheel.addPixelChild({sx: 40, sy: 10, color: col})
     }
 
     addLights(path) {
@@ -55,6 +60,7 @@ class Bus extends Sprite {
                 this.shaderProgram = shaderProgram;
                 this.visible = true;
             })
+        this.addWheels();
     }
 
     turnOnLights() {
@@ -73,14 +79,12 @@ class Bus extends Sprite {
 
     serialize() {
         let item = super.serialize();
-        item.wheelImagePath = this.#wheelImagePath;
         item.lightMaskImagePath = this.#lightMaskImagePath;
         return item;
     }
 
     deserialize(item) {
         super.deserialize(item);
-        this.addWheels(item.wheelImagePath);
         this.addLights(item.lightMaskImagePath);
 
     }
