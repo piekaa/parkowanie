@@ -4,6 +4,7 @@ import TrailerConnectionPoint from "./TrailerConnectionPoint.js";
 class Trailer extends Sprite {
 
     #connectionPoint;
+    #pivotPoint;
     connected = false;
     connectedTo;
 
@@ -22,11 +23,16 @@ class Trailer extends Sprite {
         this.addPixelChild({x: 90, y: 80, sx: 40, sy: 10, color: wheelColor});
 
         this.setPivot(90, 39);
+        this.#pivotPoint = this.addPixelChild({
+            x: 90,
+            y: 39
+        })
+        this.#pivotPoint.visible = false;
     }
 
     update() {
         if (this.connected) {
-            this.angle = this.worldPositionVector().direction(this.connectedTo.worldPositionVector()).toAngleDegrees();
+            this.angle = this.#pivotPoint.worldPositionVector().direction(this.connectedTo.worldPositionVector()).toAngleDegrees();
         }
     }
 
