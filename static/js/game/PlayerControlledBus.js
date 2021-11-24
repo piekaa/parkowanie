@@ -1,5 +1,7 @@
 import Vector from "../engine/Vector.js";
 import Bus from "./Bus.js";
+import Collider from "../engine/Collider.js";
+import Hook from "./Hook.js";
 
 class PlayerControlledBus extends Bus {
 
@@ -15,6 +17,7 @@ class PlayerControlledBus extends Bus {
     #rearFollowPoint
     #frontFollowPoint
 
+    #hook;
 
     init() {
         super.init();
@@ -23,6 +26,19 @@ class PlayerControlledBus extends Bus {
 
         this.#rearFollowPoint.visible = false;
         this.#frontFollowPoint.visible = false;
+
+        this.#addHook();
+    }
+
+    #addHook() {
+        this.#hook = this.addPixelChild({x: -10, y: 39, sx: 20, sy: 8, color: [0.2, 0.2, 0.2, 1]}, Hook);
+        this.#hook.moving = true;
+        this.#hook.addCollider(new Collider([
+            new Vector(0,0),
+            new Vector(0,1),
+            new Vector(1,1),
+            new Vector(1,0),
+        ]));
     }
 
     update(params) {

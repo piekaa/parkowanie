@@ -89,18 +89,22 @@ class PiekoszekEngine {
         this.behaviours.push(behaviour);
     }
 
+    // to be used by Sprite class, use createSprite instead
     newSprite(imagePath, Type = Sprite, transformation) {
         const sprite = new Type(imagePath, this.#gl, this);
         return this.#setupSprite(sprite, transformation);
     }
 
-    newPixelSprite(transformation) {
-        const sprite = new Sprite("js/engine/common/pixel.png", this.#gl, this);
+    // to be used by Sprite class, use createPixelSprite instead
+    newPixelSprite(transformation, Type) {
+        const sprite = new Type("js/engine/common/pixel.png", this.#gl, this);
         return this.#setupSprite(sprite, transformation);
     }
 
     #setupSprite(sprite, transformation) {
         sprite.shaderProgram = this.#standardShaderProgram;
+
+        transformation = transformation || {x: 0, y: 0, sx: 1, sy: 1, color: [1,1,1,1]};
 
         transformation.sx = transformation.sx || 1;
         transformation.sy = transformation.sy || 1;
@@ -117,7 +121,13 @@ class PiekoszekEngine {
         return sprite;
     }
 
-    createSprite(imagePath, Type = Sprite, transformation = {x: 0, y: 0, sx: 1, sy: 1, color: [1,1,1,1]}) {
+    createPixelSprite(transformation, Type=Sprite) {
+        const sprite = this.newPixelSprite(transformation, Type);
+        this.#sprites.push(sprite);
+        return sprite;
+    }
+
+    createSprite(imagePath, Type = Sprite, transformation) {
         const sprite = this.newSprite(imagePath, Type, transformation);
         this.#sprites.push(sprite);
         return sprite;
@@ -134,24 +144,31 @@ class PiekoszekEngine {
     #update() {
         const rect = this.#canvas.getBoundingClientRect();
         this.#updateParams.screenRect = rect;
-        this.#checkCollisions();
         this.#checkMouseCollisions();
         this.#runUpdates();
         this.#render(rect);
+        this.#checkCollisions();
     }
 
     #checkCollisions() {
         for (let i = 0; i < this.#movingColliders.length; i++) {
             const collider = this.#movingColliders[i];
+            if( !collider.sprite.isReady()) {
+                continue;
+            }
             for (let j = 0; j < this.#movingColliders.length; j++) {
                 if (i === j) {
                     continue;
                 }
                 const collider2 = this.#movingColliders[j];
 
+                if( !collider2.sprite.isReady()) {
+                    continue;
+                }
+
                 if (collider.collides(collider2)) {
-                    collider.sprite.onCollision();
-                    collider2.sprite.onCollision();
+                    collider.sprite.onCollision(collider2);
+                    collider2.sprite.onCollision(collider);
                 }
             }
 
@@ -159,8 +176,8 @@ class PiekoszekEngine {
                 const collider2 = this.#notMovingColliders[j];
 
                 if (collider.collides(collider2)) {
-                    collider.sprite.onCollision();
-                    collider2.sprite.onCollision();
+                    collider.sprite.onCollision(collider2);
+                    collider2.sprite.onCollision(collider);
                 }
             }
 
@@ -199,7 +216,7 @@ class PiekoszekEngine {
     }
 
     #render(rect) {
-        this.#gl.clearColor(0.4, 0.4, 0.4, 1);
+        this.#gl.clearColor(0.5, 0.5, 0.5, 1);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
         const screenAndCamera = Matrix2D.Scale(2 / rect.width, 2 / rect.height).multiply(Matrix2D.Translation(-rect.width / 2, -rect.height / 2)).multiply(this.camera.matrix(rect));
         this.#sprites.forEach(sprite => sprite.render(screenAndCamera.float32array()));

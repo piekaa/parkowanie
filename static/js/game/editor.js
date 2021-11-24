@@ -4,7 +4,7 @@ import Vector from "../engine/Vector.js";
 import Serializer from "../engine/Serializer.js";
 import StandingBus from "./StandingBus.js";
 import EditorTransformer from "./EditorTransformer.js";
-import Bus from "./Bus.js";
+import PlayerControlledBus from "./PlayerControlledBus.js";
 
 window.onload = () => {
     document.getElementById("try").onclick = () => {
@@ -19,7 +19,7 @@ const game = new PiekoszekEngine(document.getElementById("canvas"), () => {
     const minCamera = 0.45;
     const maxCamera = 4;
 
-    const playerBus = addBus(Bus);
+    const playerBus = addBus(PlayerControlledBus);
     playerBus.setColor([1, 1, 1, 1]);
     playerBus.x = 100;
     playerBus.y = 350;

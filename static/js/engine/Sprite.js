@@ -62,28 +62,33 @@ class Sprite {
         if(!Sprite.imageCache[imgPath]) {
             this.#img = new Image();
             this.#img.onload = () => {
-                const pos_and_tex = [
-                    0, 0, 0, 1,
-                    0, this.#img.height, 0, 0,
-                    this.#img.width, 0, 1, 1,
-                    this.#img.width, this.#img.height, 1, 0,
-                ]
-
-                this.#positionBuffer = gl.createBuffer();
-                this.#positionBufferData = new Float32Array(pos_and_tex);
-
-                this.#createTextureForImage(this.#img);
-                this.setPivot(this.#img.width / 2, this.#img.height / 2);
-                this.#ready = true;
-                this.init();
-                this.afterInit();
-
                 Sprite.imageCache[imgPath] = this.#img;
+                this.#afterImageLoad();
             }
             this.#img.src = imgPath;
         } else {
             this.#img = Sprite.imageCache[imgPath];
+            this.#afterImageLoad();
         }
+    }
+
+    #afterImageLoad() {
+        const gl = this.#gl;
+        const pos_and_tex = [
+            0, 0, 0, 1,
+            0, this.#img.height, 0, 0,
+            this.#img.width, 0, 1, 1,
+            this.#img.width, this.#img.height, 1, 0,
+        ]
+
+        this.#positionBuffer = gl.createBuffer();
+        this.#positionBufferData = new Float32Array(pos_and_tex);
+
+        this.#createTextureForImage(this.#img);
+        this.setPivot(this.#img.width / 2, this.#img.height / 2);
+        this.#ready = true;
+        this.init();
+        this.afterInit();
     }
     
     #createTextureForImage(img) {
@@ -127,8 +132,8 @@ class Sprite {
         return sprite;
     }
 
-    addPixelChild(transformation = {x: 0, y: 0, sx: 1, sy: 1, color: [1,1,1,1]}) {
-        const sprite = this.game.newPixelSprite(transformation);
+    addPixelChild(transformation = {x: 0, y: 0, sx: 1, sy: 1, color: [1,1,1,1]}, Type = Sprite) {
+        const sprite = this.game.newPixelSprite(transformation, Type);
         this.#children.push(sprite);
         return sprite;
     }
@@ -261,6 +266,10 @@ class Sprite {
         if (!this.renderChildrenFirst) {
             this.#children.forEach(child => child.render(screenAndCameraArray, transformation));
         }
+    }
+
+    isReady() {
+        return this.#ready;
     }
 
     serialize() {
