@@ -18,8 +18,6 @@ class PiekoszekEngine {
 
     constructor(canvas, afterInitFunction) {
         this.#canvas = canvas;
-
-
         this.camera = new Camera();
 
         this.#updateParams = new UpdateParams(canvas, this.camera);
@@ -93,21 +91,33 @@ class PiekoszekEngine {
 
     newSprite(imagePath, Type = Sprite, transformation) {
         const sprite = new Type(imagePath, this.#gl, this);
+        return this.#setupSprite(sprite, transformation);
+    }
+
+    newPixelSprite(transformation) {
+        const sprite = new Sprite("js/engine/common/pixel.png", this.#gl, this);
+        return this.#setupSprite(sprite, transformation);
+    }
+
+    #setupSprite(sprite, transformation) {
         sprite.shaderProgram = this.#standardShaderProgram;
 
         transformation.sx = transformation.sx || 1;
         transformation.sy = transformation.sy || 1;
         transformation.x = transformation.x || 0;
         transformation.y = transformation.y || 0;
+        transformation.color = transformation.color || [1,1,1,1];
+
 
         sprite.x = transformation.x;
         sprite.y = transformation.y;
         sprite.sx = transformation.sx;
         sprite.sy = transformation.sy;
+        sprite.setColor(transformation.color)
         return sprite;
     }
 
-    createSprite(imagePath, Type = Sprite, transformation = {x: 0, y: 0, sx: 1, sy: 1}) {
+    createSprite(imagePath, Type = Sprite, transformation = {x: 0, y: 0, sx: 1, sy: 1, color: [1,1,1,1]}) {
         const sprite = this.newSprite(imagePath, Type, transformation);
         this.#sprites.push(sprite);
         return sprite;
