@@ -5,13 +5,13 @@ import Vector from "./Vector.js";
 
 class PiekoszekEngine {
 
-    #canvas
-    #gl
-    #standardShaderProgram
-    #sprites = []
-    camera
-    behaviours = []
-    #updateParams
+    #canvas;
+    #gl;
+    #standardShaderProgram;
+    #sprites = [];
+    camera;
+    behaviours = [];
+    #updateParams;
 
     #movingColliders = [];
     #notMovingColliders = [];

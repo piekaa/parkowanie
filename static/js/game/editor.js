@@ -4,7 +4,6 @@ import StandingBus from "./StandingBus.js";
 import EditorTransformer from "./EditorTransformer.js";
 import PlayerControlledBus from "./PlayerControlledBus.js";
 import Trailer from "./Trailer.js";
-import Bus from "./Bus.js";
 
 window.onload = () => {
     document.getElementById("try").onclick = () => {
@@ -65,11 +64,7 @@ const game = new PiekoszekEngine(document.getElementById("canvas"), () => {
         }
 
         if (params.keyDownThisFrame("n")) {
-
-            // const type = StandingBus;
-            game.createSprite("/assets/bus/bus.png", Bus);
-
-            // items.push(addBus(StandingBus, params.screenRect));
+            items.push(addBus(StandingBus, params.screenRect));
         }
 
         if (params.keyDownThisFrame("m")) {
@@ -100,9 +95,9 @@ function addBus(Type, rect = {width: 0, height: 0}) {
             sx: 0.5,
             sy: 0.5,
         });
-    // bus.addLights("/assets/bus/lightMask.png");
-    // bus.setColor(colors[Math.floor(Math.random() * colors.length)]);
-    // EditorTransformer.Transform(bus);
+    bus.addLights("/assets/bus/lightMask.png");
+    bus.setColor(colors[Math.floor(Math.random() * colors.length)]);
+    EditorTransformer.Transform(bus);
     return bus;
 }
 

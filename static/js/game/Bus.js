@@ -4,11 +4,11 @@ import Vector from "../engine/Vector.js";
 
 class Bus extends Sprite {
 
-    #leftFrontWheel;
-    #rightFrontWheel;
+    #leftFrontWheel = {};
+    #rightFrontWheel = {};
 
-    #leftRearWheel;
-    #rightRearWheel;
+    #leftRearWheel = {};
+    #rightRearWheel = {};
 
     #frontLeftLight = {};
     #frontRightLight = {};
@@ -16,7 +16,7 @@ class Bus extends Sprite {
     #rearLeftLight = {};
     #rearRightLight = {};
 
-    #lightMaskImagePath;
+    #lightMaskImagePath = "";
 
     wheelsAngle = 0;
 
@@ -30,8 +30,6 @@ class Bus extends Sprite {
 
     addWheels() {
         const col = [0.09, 0.09, 0.09, 1];
-
-        console.log(this);
 
         this.#leftFrontWheel = this.addPixelChild({x: 310, y: 0, color: col});
         this.#leftFrontWheel.addPixelChild({sx: 40, sy: 10, color: col})

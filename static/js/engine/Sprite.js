@@ -55,20 +55,26 @@ class Sprite {
     };
 
     constructor(imgPath, gl, game) {
+        console.log("SPRITE CONSTRUCTOR");
         this.#gl = gl;
+        console.log("GL:");
+        console.log(this.#gl);
         this.game = game;
 
         this.#imagePath = imgPath;
-        if(!Sprite.imageCache[imgPath]) {
+        if (!Sprite.imageCache[imgPath]) {
             this.#img = new Image();
             this.#img.onload = () => {
+                console.log("ONLOAD");
                 Sprite.imageCache[imgPath] = this.#img;
                 this.#afterImageLoad();
             }
             this.#img.src = imgPath;
         } else {
             this.#img = Sprite.imageCache[imgPath];
-            this.#afterImageLoad();
+            console.log("SETTING TIMEOUT");
+            setTimeout(this.#afterImageLoad.bind(this), 1);
+
         }
     }
 
@@ -90,7 +96,7 @@ class Sprite {
         this.init();
         this.afterInit();
     }
-    
+
     #createTextureForImage(img) {
         const gl = this.#gl
         this.texture = gl.createTexture();
@@ -126,13 +132,13 @@ class Sprite {
         this.#pivot = Matrix2D.Translation(-x, -y);
     }
 
-    addChild(imagePath, Type = Sprite, transformation = {x: 0, y: 0, sx: 1, sy: 1, color: [1,1,1,1]}) {
+    addChild(imagePath, Type = Sprite, transformation = {x: 0, y: 0, sx: 1, sy: 1, color: [1, 1, 1, 1]}) {
         const sprite = this.game.newSprite(imagePath, Type, transformation);
         this.#children.push(sprite);
         return sprite;
     }
 
-    addPixelChild(transformation = {x: 0, y: 0, sx: 1, sy: 1, color: [1,1,1,1]}, Type = Sprite) {
+    addPixelChild(transformation = {x: 0, y: 0, sx: 1, sy: 1, color: [1, 1, 1, 1]}, Type = Sprite) {
         const sprite = this.game.newPixelSprite(transformation, Type);
         this.#children.push(sprite);
         return sprite;
