@@ -10,7 +10,7 @@ class Trailer extends Sprite {
 
     init() {
         this.#connectionPoint = this.addPixelChild({
-            x: 386,
+            x: 390,
             y: 40,
             sx: 15,
             sy: 15,
@@ -28,14 +28,25 @@ class Trailer extends Sprite {
             y: 39
         })
         this.#pivotPoint.visible = false;
+        this.#connectionPoint.visible = false;
     }
 
     update() {
         if (this.connected) {
+            this.#moveToPoint();
             this.angle = this.#pivotPoint.worldPositionVector().direction(this.connectedTo.worldPositionVector()).toAngleDegrees();
         }
     }
 
+    #moveToPoint () {
+
+        const Dv = this.#pivotPoint.worldPositionVector().direction(this.connectedTo.worldPositionVector());
+        const dv = this.#pivotPoint.worldPositionVector().direction(this.#connectionPoint.worldPositionVector());
+        const distanceToMove = Dv.length() - dv.length();
+        const toMoveV = Dv.normalized().multiply(distanceToMove);
+        this.x += toMoveV.x;
+        this.y += toMoveV.y;
+    }
 }
 
 export default Trailer
