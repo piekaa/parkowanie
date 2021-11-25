@@ -55,24 +55,19 @@ class Sprite {
     };
 
     constructor(imgPath, gl, game) {
-        console.log("SPRITE CONSTRUCTOR");
         this.#gl = gl;
-        console.log("GL:");
-        console.log(this.#gl);
         this.game = game;
 
         this.#imagePath = imgPath;
         if (!Sprite.imageCache[imgPath]) {
             this.#img = new Image();
             this.#img.onload = () => {
-                console.log("ONLOAD");
                 Sprite.imageCache[imgPath] = this.#img;
                 this.#afterImageLoad();
             }
             this.#img.src = imgPath;
         } else {
             this.#img = Sprite.imageCache[imgPath];
-            console.log("SETTING TIMEOUT");
             setTimeout(this.#afterImageLoad.bind(this), 1);
 
         }
@@ -280,10 +275,10 @@ class Sprite {
 
     serialize() {
 
-        let serializedColliders = [];
-        this.#colliders.forEach(collider => {
-            serializedColliders.push(collider.serialize());
-        })
+        // let serializedColliders = [];
+        // this.#colliders.forEach(collider => {
+        //     serializedColliders.push(collider.serialize());
+        // })
 
         return {
             x: this.x,
@@ -295,7 +290,7 @@ class Sprite {
             type: this.constructor.name,
             imagePath: this.#imagePath,
             moving: this.moving,
-            colliders: serializedColliders,
+            // colliders: serializedColliders,
         };
     }
 
@@ -307,9 +302,9 @@ class Sprite {
         this.angle = item.angle;
         this.setColor(new Float32Array(item.color));
         this.moving = item.moving;
-        item.colliders.forEach(serializedCollider => {
-            this.addCollider(new Collider(serializedCollider.map(Vector.FromObject)));
-        })
+        // item.colliders.forEach(serializedCollider => {
+        //     this.addCollider(new Collider(serializedCollider.map(Vector.FromObject)));
+        // })
     }
 }
 

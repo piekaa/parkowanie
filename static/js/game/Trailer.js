@@ -1,6 +1,8 @@
 import Sprite from "../engine/Sprite.js";
 import TrailerConnectionPoint from "./TrailerConnectionPoint.js";
 import Hook from "./Hook.js";
+import Collider from "../engine/Collider.js";
+import Vector from "../engine/Vector.js";
 
 class Trailer extends Sprite {
 
@@ -33,6 +35,42 @@ class Trailer extends Sprite {
         this.#connectionPoint.visible = false;
 
         Hook.Add(this);
+
+
+        // buda
+        this.addCollider(new Collider([
+            new Vector(1, 1),
+            new Vector(1, 79),
+            new Vector(326, 79),
+            new Vector(326, 1),
+        ]));
+
+        // trojkat
+        this.addCollider(new Collider([
+            new Vector(326, 60),
+            new Vector(351, 80 - 34),
+            new Vector(351, 80 - 44),
+            new Vector(326, 80 - 60),
+        ]));
+
+        // // palak
+        // this.addCollider(new Collider([
+        //     new Vector(351, 80 - 34),
+        //     new Vector(378, 80 - 34),
+        //     new Vector(392, 80 - 37),
+        //     new Vector(392, 80 - 41),
+        //     new Vector(387, 80 - 44),
+        //     new Vector(351, 80 - 44),
+        // ]));
+
+        // palak
+        this.addCollider(new Collider([
+            new Vector(351, 80 - 34),
+            new Vector(392, 80 - 34),
+            new Vector(392, 80 - 44),
+            new Vector(351, 80 - 44),
+        ]));
+
     }
 
     update() {
