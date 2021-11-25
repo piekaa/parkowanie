@@ -36,6 +36,7 @@ class Trailer extends Sprite {
 
         Hook.Add(this);
 
+        this.moving = true;
 
         // buda
         this.addCollider(new Collider([
