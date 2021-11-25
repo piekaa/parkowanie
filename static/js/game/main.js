@@ -30,6 +30,33 @@ LevelLoader.Load(document.getElementById("canvas"),
                 color: [1, 1, 1, 1]
             });
 
+        game.createSprite("assets/bus/trailer.png", Trailer,
+            {
+                x: 0,
+                y: 100,
+                sx: 0.5,
+                sy: 0.5,
+                color: [1, 1, 1, 1]
+            });
+
+        game.createSprite("assets/bus/trailer.png", Trailer,
+            {
+                x: -250,
+                y: 100,
+                sx: 0.5,
+                sy: 0.5,
+                color: [1, 1, 1, 1]
+            });
+
+        game.createSprite("assets/bus/trailer.png", Trailer,
+            {
+                x: 0,
+                y: 200,
+                sx: 0.5,
+                sy: 0.5,
+                color: [1, 1, 1, 1]
+            });
+
         const cameraZoomSpeed = 0.03;
         const minCamera = 0.45;
         const maxCamera = 4;

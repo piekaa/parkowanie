@@ -1,5 +1,6 @@
 import Sprite from "../engine/Sprite.js";
 import TrailerConnectionPoint from "./TrailerConnectionPoint.js";
+import Hook from "./Hook.js";
 
 class Trailer extends Sprite {
 
@@ -7,6 +8,7 @@ class Trailer extends Sprite {
     #pivotPoint;
     connected = false;
     connectedTo;
+
 
     init() {
         this.#connectionPoint = this.addPixelChild({
@@ -29,6 +31,8 @@ class Trailer extends Sprite {
         })
         this.#pivotPoint.visible = false;
         this.#connectionPoint.visible = false;
+
+        Hook.Add(this);
     }
 
     update() {
@@ -38,7 +42,7 @@ class Trailer extends Sprite {
         }
     }
 
-    #moveToPoint () {
+    #moveToPoint() {
 
         const Dv = this.#pivotPoint.worldPositionVector().direction(this.connectedTo.worldPositionVector());
         const dv = this.#pivotPoint.worldPositionVector().direction(this.#connectionPoint.worldPositionVector());
