@@ -1,4 +1,6 @@
 import Sprite from "../engine/Sprite.js";
+import Collider from "../engine/Collider.js";
+import Vector from "../engine/Vector.js";
 
 class Bus extends Sprite {
 
@@ -18,18 +20,26 @@ class Bus extends Sprite {
 
     wheelsAngle = 0;
 
+    static collider = new Collider(
+        [
+            new Vector(1, 1),
+            new Vector(1, 79),
+            new Vector(399, 79),
+            new Vector(399, 1),
+        ]);
+
     addWheels() {
         const col = [0.09, 0.09, 0.09, 1];
-        this.#leftFrontWheel = super.addPixelChild({x: 310, y: 0, color: col});
+        this.#leftFrontWheel = this.addPixelChild({x: 310, y: 0, color: col});
         this.#leftFrontWheel.addPixelChild({sx: 40, sy: 10, color: col})
 
-        this.#rightFrontWheel = super.addPixelChild({x: 310, y: 80, color: col});
+        this.#rightFrontWheel = this.addPixelChild({x: 310, y: 80, color: col});
         this.#rightFrontWheel.addPixelChild({sx: 40, sy: 10, color: col})
 
-        this.#leftRearWheel = super.addPixelChild({x: 90, y: 0, color: col});
+        this.#leftRearWheel = this.addPixelChild({x: 90, y: 0, color: col});
         this.#leftRearWheel.addPixelChild({sx: 40, sy: 10, color: col})
 
-        this.#rightRearWheel = super.addPixelChild({x: 90, y: 80, color: col});
+        this.#rightRearWheel = this.addPixelChild({x: 90, y: 80, color: col});
         this.#rightRearWheel.addPixelChild({sx: 40, sy: 10, color: col})
     }
 
@@ -61,6 +71,16 @@ class Bus extends Sprite {
                 this.visible = true;
             })
         this.addWheels();
+        this.setMovingAndAddCollider();
+    }
+
+    setMovingAndAddCollider() {
+        this.setMoving();
+        this.addCollider(Bus.collider.copy());
+    }
+
+    setMoving() {
+        this.moving = false;
     }
 
     turnOnLights() {

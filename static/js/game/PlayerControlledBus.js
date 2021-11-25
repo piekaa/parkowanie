@@ -1,6 +1,5 @@
 import Vector from "../engine/Vector.js";
 import Bus from "./Bus.js";
-import Collider from "../engine/Collider.js";
 import Hook from "./Hook.js";
 
 class PlayerControlledBus extends Bus {
@@ -26,6 +25,10 @@ class PlayerControlledBus extends Bus {
         this.#frontFollowPoint.visible = false;
 
         Hook.Add(this);
+    }
+
+    setMoving() {
+        this.moving = true;
     }
 
     update(params) {

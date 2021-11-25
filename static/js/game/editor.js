@@ -1,10 +1,9 @@
 import PiekoszekEngine from '/js/engine/PiekoszekEngine.js'
-import Collider from "../engine/Collider.js";
-import Vector from "../engine/Vector.js";
 import Serializer from "../engine/Serializer.js";
 import StandingBus from "./StandingBus.js";
 import EditorTransformer from "./EditorTransformer.js";
 import PlayerControlledBus from "./PlayerControlledBus.js";
+import Trailer from "./Trailer.js";
 
 window.onload = () => {
     document.getElementById("try").onclick = () => {
@@ -68,19 +67,15 @@ const game = new PiekoszekEngine(document.getElementById("canvas"), () => {
             items.push(addBus(StandingBus, params.screenRect));
         }
 
+        if (params.keyDownThisFrame("m")) {
+            items.push(addTrailer(params.screenRect));
+        }
+
         if (params.keyDownThisFrame("k")) {
             document.getElementById("serialized").value = Serializer.SerializeToString([playerBus, ...items]);
         }
     });
 });
-
-const collider = new Collider(
-    [
-        new Vector(1, 1),
-        new Vector(1, 79),
-        new Vector(399, 79),
-        new Vector(399, 1),
-    ]);
 
 function addBus(Type, rect = {width: 0, height: 0}) {
 
@@ -100,12 +95,20 @@ function addBus(Type, rect = {width: 0, height: 0}) {
             sx: 0.5,
             sy: 0.5,
         });
-    const currentCollider = collider.copy();
     bus.addWheels("/assets/bus/wheel.png");
     bus.addLights("/assets/bus/lightMask.png");
-    bus.addCollider(currentCollider);
     bus.setColor(colors[Math.floor(Math.random() * colors.length)]);
     EditorTransformer.Transform(bus);
-
     return bus;
+}
+
+function addTrailer(rect) {
+    const trailer = game.createSprite("/assets/bus/trailer.png", Trailer,
+        {
+            x: (game.camera.wx + rect.width / 2) / game.camera.sx,
+            y: (game.camera.wy + rect.height / 2) / game.camera.sy,
+            sx: 0.55,
+            sy: 0.55,
+        });
+    EditorTransformer.Transform(trailer);
 }
