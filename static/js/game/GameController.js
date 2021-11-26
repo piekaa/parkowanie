@@ -5,8 +5,19 @@ class GameController {
 
     static playerBus;
 
+    static restarting = false;
+
+    static start() {
+        GameController.restarting = false;
+    }
+
     static restart() {
-        this.playerBus.update = () => {};
+        if (GameController.restarting) {
+            return;
+        }
+        GameController.restarting = true;
+        this.playerBus.update = () => {
+        };
         CameraController.zoomOutToShowCollision();
         LevelLoader.restart(3000);
     }
