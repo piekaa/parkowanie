@@ -243,12 +243,9 @@ class PiekoszekEngine {
 
     #runUpdates() {
         this.behaviours.forEach(behaviour => behaviour(this.#updateParams));
-
-        this.#sprites.forEach(sprite => sprite.update(this.#updateParams));
-        this.#sprites.forEach(sprite => sprite.updateChildren(this.#updateParams));
-
+        this.#sprites.filter(sprite => sprite.isReady()).forEach(sprite => sprite.update(this.#updateParams));
+        this.#sprites.filter(sprite => sprite.isReady()).forEach(sprite => sprite.updateChildren(this.#updateParams));
         this.camera.update(this.#updateParams);
-
         this.#updateParams.update();
     }
 

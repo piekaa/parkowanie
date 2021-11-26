@@ -1,5 +1,5 @@
 import Bus from "./Bus.js";
-import LevelLoader from "../engine/LevelLoader.js";
+import GameController from "./GameController.js";
 
 class StandingBus extends Bus {
 
@@ -15,9 +15,7 @@ class StandingBus extends Bus {
     onCollision() {
         this.turnOnLights();
         this.turnOffIn = 2;
-
-        LevelLoader.restart();
-
+        GameController.restart();
     }
 }
 

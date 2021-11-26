@@ -4,7 +4,7 @@ import Hook from "./Hook.js";
 import Collider from "../engine/Collider.js";
 import Vector from "../engine/Vector.js";
 import Lights from "./Lights.js";
-import LevelLoader from "../engine/LevelLoader.js";
+import GameController from "./GameController.js";
 
 class Trailer extends Sprite {
 
@@ -123,14 +123,14 @@ class Trailer extends Sprite {
     }
 
     onCollision(otherCollider, myCollider) {
-        if(myCollider === this.#connectionPointCollider) {
+        if (myCollider === this.#connectionPointCollider) {
             if (otherCollider.sprite.constructor.name !== "Hook") {
                 this.#turnOffLightsIn = 2;
-                LevelLoader.restart();
+                GameController.restart();
             }
         } else {
             this.#turnOffLightsIn = 2;
-            LevelLoader.restart();
+            GameController.restart();
         }
     }
 

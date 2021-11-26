@@ -3,6 +3,8 @@ import LevelLoader from "../engine/LevelLoader.js";
 import PlayerControlledBus from "./PlayerControlledBus.js";
 import Trailer from "./Trailer.js";
 import TrailerParking from "./TrailerParking.js";
+import GameController from "./GameController.js";
+import CameraController from "./CameraController.js";
 
 
 const levelParam = new URLSearchParams(window.location.search).get("level");
@@ -23,29 +25,6 @@ LevelLoader.Load(document.getElementById("canvas"),
     (game) => {
         const bus = game.getSpriteByType(PlayerControlledBus);
         game.camera.follow(bus);
-
-
-        const cameraZoomSpeed = 0.03;
-        const minCamera = 0.45;
-        const maxCamera = 4;
-
-        game.addBehaviour((params) => {
-            if (params.keyDown("q")) {
-                game.camera.sx -= cameraZoomSpeed;
-                game.camera.sy -= cameraZoomSpeed;
-                if (game.camera.sx < minCamera) {
-                    game.camera.sx = minCamera;
-                    game.camera.sy = minCamera;
-                }
-            }
-            if (params.keyDown("e")) {
-                game.camera.sx += cameraZoomSpeed;
-                game.camera.sy += cameraZoomSpeed;
-                if (game.camera.sx > maxCamera) {
-                    game.camera.sx = maxCamera;
-                    game.camera.sy = maxCamera;
-                }
-            }
-        });
-
+        GameController.playerBus = bus;
+        CameraController.setup(game);
     });

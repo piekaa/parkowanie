@@ -19,9 +19,11 @@ class LevelLoader {
         LevelLoader.#createGame();
     }
 
-    static restart() {
-        LevelLoader.game.forgetAll();
-        LevelLoader.#addItems()
+    static restart(delayMillis = 3000) {
+        setTimeout( () => {
+            LevelLoader.game.forgetAll();
+            LevelLoader.#addItems();
+        }, delayMillis);
     }
 
     static #createGame() {

@@ -4,3 +4,4 @@ PlayerControlledBus.js:77 Uncaught TypeError: Cannot read properties of undefine
     at Camera.update (Camera.js:37)
     at PiekoszekEngine.#runUpdates (PiekoszekEngine.js:233)
     at PiekoszekEngine.#update (PiekoszekEngine.js:155)
+Powyższe naprawione, punkty do śledzenia się jeszcze nie stworzyły

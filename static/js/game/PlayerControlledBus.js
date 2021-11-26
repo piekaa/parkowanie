@@ -74,6 +74,10 @@ class PlayerControlledBus extends Bus {
     }
 
     followVector() {
+        if(!this.#rearFollowPoint || !this.#frontFollowPoint) {
+            return this.worldPositionVector();
+        }
+
         return this.#rearFollowPoint.followVector()
             .lerpClamp(this.#frontFollowPoint.followVector(), this.#cameraLerp);
     }
