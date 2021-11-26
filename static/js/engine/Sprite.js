@@ -125,6 +125,10 @@ class Sprite {
         this.#colorArray = new Float32Array(color);
     }
 
+    getColor() {
+        return Array.from(this.#colorArray);
+    }
+
     #isPowerOf2(value) {
         return (value & (value - 1)) === 0;
     }
@@ -337,6 +341,8 @@ class Sprite {
         }
         return false;
     }
+
+
 }
 
 export default Sprite

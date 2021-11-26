@@ -69,8 +69,8 @@ const game = new PiekoszekEngine(document.getElementById("canvas"), () => {
         }
 
         if (params.keyDownThisFrame("m")) {
-            items.push(addTrailer(params.screenRect));
             items.unshift(addTrailerParking(params.screenRect));
+            items.push(addTrailer(params.screenRect));
         }
 
         if (params.keyDownThisFrame("k")) {
@@ -81,7 +81,7 @@ const game = new PiekoszekEngine(document.getElementById("canvas"), () => {
 
 function addBus(Type, rect = {width: 0, height: 0}) {
 
-    const colors = [
+    const busColors = [
         [0.4, 0.1, 0.11, 1],
         [0.1, 0.4, 0.1, 1],
         [0.08, 0.25, 0.3, 1],
@@ -98,10 +98,19 @@ function addBus(Type, rect = {width: 0, height: 0}) {
             sy: 0.5,
         });
     bus.addLights("/assets/bus/lightMask.png");
-    bus.setColor(colors[Math.floor(Math.random() * colors.length)]);
+    bus.setColor(busColors[Math.floor(Math.random() * busColors.length)]);
     EditorTransformer.Transform(bus);
     return bus;
 }
+
+let trailerColorIndex = 0;
+const trailerColors = [
+    [0.6, 0.8, 0.4, 1],
+    [0.3, 0.3, 0.6, 1],
+    [0.0, 0.7, 0.7, 1],
+    [0.0, 0.7, 0, 1],
+    [0.7, 0, 0, 1],
+];
 
 function addTrailer(rect) {
     const trailer = game.createSprite("/assets/bus/trailer.png", Trailer,
@@ -110,6 +119,7 @@ function addTrailer(rect) {
             y: (game.camera.wy + rect.height / 2) / game.camera.sy,
             sx: 0.5,
             sy: 0.5,
+            color: trailerColors[trailerColorIndex++]
         });
     trailer.addLights("/assets/bus/lightMask.png");
     EditorTransformer.Transform(trailer);
@@ -123,6 +133,7 @@ function addTrailerParking(rect) {
             y: (game.camera.wy + rect.height / 2) / game.camera.sy + 100,
             sx: 0.5,
             sy: 0.5,
+            color: trailerColors[trailerColorIndex]
         });
     EditorTransformer.Transform(trailerParking);
     return trailerParking;

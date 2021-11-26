@@ -252,6 +252,13 @@ class PiekoszekEngine {
         this.#sprites.forEach(sprite => sprite.render(screenAndCamera.float32array()));
     }
 
+    static colorEquals(col1, col2) {
+        return col1[0] === col2[0] &&
+            col1[1] === col2[1] &&
+            col1[2] === col2[2] &&
+            col1[3] === col2[3];
+    }
+
 }
 
 class UpdateParams {

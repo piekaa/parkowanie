@@ -124,11 +124,9 @@ class Trailer extends Sprite {
     onCollision(otherCollider, myCollider) {
         if(myCollider === this.#connectionPointCollider) {
             if (otherCollider.sprite.constructor.name !== "Hook") {
-                console.log("Not hook, connecting");
                 this.#turnOffLightsIn = 2;
             }
         } else {
-            console.log("Not connection point collider connecting");
             this.#turnOffLightsIn = 2;
         }
     }
