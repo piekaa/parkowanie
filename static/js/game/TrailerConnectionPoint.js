@@ -19,6 +19,10 @@ class TrailerConnectionPoint extends Sprite {
     }
 
     onCollision(collider) {
+        if( this.trailer.done) {
+            return;
+        }
+
         if (collider.sprite.constructor.name === "Hook") {
             this.trailer.connected = true;
             this.trailer.connectedTo = collider.sprite;

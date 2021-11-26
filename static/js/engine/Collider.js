@@ -51,6 +51,26 @@ class Collider {
         return false;
     }
 
+    allCollidersInside(colliders) {
+        for (let i = 0; i < colliders.length; i++) {
+            const collider = colliders[i];
+            if (!this.colliderInside(collider)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    colliderInside(collider) {
+        for (let i = 0; i < collider.#worldPoints.length; i++) {
+            const p = collider.#worldPoints[i];
+            if (!this.isInside(p)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     isInside(point) {
         let pointsAndNormals = [];
         for (let i = 0; i < this.#worldPoints.length - 1; i++) {

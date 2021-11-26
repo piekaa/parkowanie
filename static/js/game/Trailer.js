@@ -10,7 +10,8 @@ class Trailer extends Sprite {
     #pivotPoint;
     connected = false;
     connectedTo;
-
+    done = false;
+    speed = 0;
 
     init() {
         this.#connectionPoint = this.addPixelChild({
@@ -75,13 +76,21 @@ class Trailer extends Sprite {
     }
 
     #moveToPoint() {
-
         const Dv = this.#pivotPoint.worldPositionVector().direction(this.connectedTo.worldPositionVector());
         const dv = this.#pivotPoint.worldPositionVector().direction(this.#connectionPoint.worldPositionVector());
         const distanceToMove = Dv.length() - dv.length();
         const toMoveV = Dv.normalized().multiply(distanceToMove);
         this.x += toMoveV.x;
         this.y += toMoveV.y;
+        this.speed = Math.abs(distanceToMove);
+    }
+
+    disconnectIfStopped() {
+        if( this.speed < 0.1) {
+            this.connected = false;
+            this.connectedTo = undefined;
+            this.done = true;
+        }
     }
 }
 

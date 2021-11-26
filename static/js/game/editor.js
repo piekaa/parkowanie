@@ -4,6 +4,7 @@ import StandingBus from "./StandingBus.js";
 import EditorTransformer from "./EditorTransformer.js";
 import PlayerControlledBus from "./PlayerControlledBus.js";
 import Trailer from "./Trailer.js";
+import TrailerParking from "./TrailerParking.js";
 
 window.onload = () => {
     document.getElementById("try").onclick = () => {
@@ -69,6 +70,7 @@ const game = new PiekoszekEngine(document.getElementById("canvas"), () => {
 
         if (params.keyDownThisFrame("m")) {
             items.push(addTrailer(params.screenRect));
+            items.push(addTrailerParking(params.screenRect));
         }
 
         if (params.keyDownThisFrame("k")) {
@@ -106,9 +108,21 @@ function addTrailer(rect) {
         {
             x: (game.camera.wx + rect.width / 2) / game.camera.sx,
             y: (game.camera.wy + rect.height / 2) / game.camera.sy,
-            sx: 0.55,
-            sy: 0.55,
+            sx: 0.5,
+            sy: 0.5,
         });
     EditorTransformer.Transform(trailer);
     return trailer;
+}
+
+function addTrailerParking(rect) {
+    const trailerParking = game.createSprite("/assets/bus/parking.png", TrailerParking,
+        {
+            x: (game.camera.wx + rect.width / 2) / game.camera.sx,
+            y: (game.camera.wy + rect.height / 2) / game.camera.sy + 100,
+            sx: 0.5,
+            sy: 0.6,
+        });
+    EditorTransformer.Transform(trailerParking);
+    return trailerParking;
 }

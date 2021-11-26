@@ -16,6 +16,9 @@ class PiekoszekEngine {
     #movingColliders = [];
     #notMovingColliders = [];
 
+    #movingSprites = [];
+    #movingSpritesMap = {};
+
     constructor(canvas, afterInitFunction) {
         this.#canvas = canvas;
         this.camera = new Camera();
@@ -104,13 +107,13 @@ class PiekoszekEngine {
     #setupSprite(sprite, transformation) {
         sprite.shaderProgram = this.#standardShaderProgram;
 
-        transformation = transformation || {x: 0, y: 0, sx: 1, sy: 1, color: [1,1,1,1]};
+        transformation = transformation || {x: 0, y: 0, sx: 1, sy: 1, color: [1, 1, 1, 1]};
 
         transformation.sx = transformation.sx || 1;
         transformation.sy = transformation.sy || 1;
         transformation.x = transformation.x || 0;
         transformation.y = transformation.y || 0;
-        transformation.color = transformation.color || [1,1,1,1];
+        transformation.color = transformation.color || [1, 1, 1, 1];
 
 
         sprite.x = transformation.x;
@@ -121,7 +124,7 @@ class PiekoszekEngine {
         return sprite;
     }
 
-    createPixelSprite(transformation, Type=Sprite) {
+    createPixelSprite(transformation, Type = Sprite) {
         const sprite = this.newPixelSprite(transformation, Type);
         this.#sprites.push(sprite);
         return sprite;
@@ -135,6 +138,10 @@ class PiekoszekEngine {
 
     addMovingCollider(collider) {
         this.#movingColliders.push(collider);
+        if (!this.#movingSpritesMap[collider.sprite.id]) {
+            this.#movingSpritesMap[collider.sprite.id] = true;
+            this.#movingSprites.push(collider.sprite);
+        }
     }
 
     addNotMovingCollider(collider) {
@@ -148,12 +155,13 @@ class PiekoszekEngine {
         this.#runUpdates();
         this.#render(rect);
         this.#checkCollisions();
+        this.#checkFullCollisions();
     }
 
     #checkCollisions() {
         for (let i = 0; i < this.#movingColliders.length; i++) {
             const collider = this.#movingColliders[i];
-            if( !collider.sprite.isReady()) {
+            if (!collider.sprite.isReady()) {
                 continue;
             }
             for (let j = 0; j < this.#movingColliders.length; j++) {
@@ -162,7 +170,7 @@ class PiekoszekEngine {
                 }
                 const collider2 = this.#movingColliders[j];
 
-                if( !collider2.sprite.isReady()) {
+                if (!collider2.sprite.isReady()) {
                     continue;
                 }
 
@@ -199,6 +207,18 @@ class PiekoszekEngine {
                 if (collider.isInside(mouse.worldVector)) {
                     collider.sprite.onMousePress(mouse);
                     return;
+                }
+            }
+        }
+    }
+
+    #checkFullCollisions() {
+        for (let i = 0; i < this.#movingSprites.length; i++) {
+            const sprite = this.#movingSprites[i];
+            for (let j = 0; j < this.#notMovingColliders.length; j++) {
+                const collider = this.#notMovingColliders[j];
+                if (collider.allCollidersInside(sprite.colliders)) {
+                    collider.sprite.onFullyInside(sprite);
                 }
             }
         }

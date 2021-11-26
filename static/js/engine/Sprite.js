@@ -1,8 +1,10 @@
 import Matrix2D from "./Matrix.js";
 import Vector from "./Vector.js";
-import Collider from "./Collider.js";
 
 class Sprite {
+
+    static idCounter = 0;
+    id = 0;
 
     #img;
     #gl
@@ -41,7 +43,7 @@ class Sprite {
     sx = 1;
     sy = 1;
 
-    #colliders = [];
+    colliders = [];
 
     moving = false;
 
@@ -55,6 +57,8 @@ class Sprite {
     };
 
     constructor(imgPath, gl, game) {
+        this.id = Sprite.idCounter++;
+
         this.#gl = gl;
         this.game = game;
 
@@ -140,7 +144,7 @@ class Sprite {
     }
 
     addCollider(collider) {
-        this.#colliders.push(collider);
+        this.colliders.push(collider);
         collider.sprite = this;
 
         if (this.moving) {
@@ -179,6 +183,11 @@ class Sprite {
 
     }
 
+    // all points of sprites collider are inside
+    onFullyInside() {
+
+    }
+
     onMousePress(mouse) {
 
     }
@@ -201,7 +210,7 @@ class Sprite {
         this.wx = transformation.x();
         this.wy = transformation.y();
 
-        this.#colliders.forEach(collider => collider.update(transformation));
+        this.colliders.forEach(collider => collider.update(transformation));
 
         if (this.renderChildrenFirst) {
             this.#children.forEach(child => child.render(screenAndCameraArray, transformation));
@@ -276,7 +285,7 @@ class Sprite {
     serialize() {
 
         // let serializedColliders = [];
-        // this.#colliders.forEach(collider => {
+        // this.colliders.forEach(collider => {
         //     serializedColliders.push(collider.serialize());
         // })
 
