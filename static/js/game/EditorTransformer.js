@@ -38,7 +38,7 @@ class EditorTransformer {
 
             }
         }
-
+        sprite.onCollision = () => {};
     }
 }
 

@@ -219,6 +219,13 @@ class PiekoszekEngine {
                     return;
                 }
             }
+            for (let i = 0; i < this.#triggerColliders.length; i++) {
+                const collider = this.#triggerColliders[i];
+                if (collider.isInside(mouse.worldVector)) {
+                    collider.sprite.onMousePress(mouse);
+                    return;
+                }
+            }
         }
     }
 
@@ -259,6 +266,15 @@ class PiekoszekEngine {
             col1[3] === col2[3];
     }
 
+    forgetAll() {
+        this.#sprites = [];
+        this.behaviours = [];
+        this.#movingColliders = [];
+        this.#notMovingColliders = [];
+        this.#triggerColliders = [];
+        this.#movingSprites = [];
+        this.#movingSpritesMap = {};
+    }
 }
 
 class UpdateParams {
