@@ -5,6 +5,7 @@ import EditorTransformer from "./EditorTransformer.js";
 import PlayerControlledBus from "./PlayerControlledBus.js";
 import Trailer from "./Trailer.js";
 import TrailerParking from "./TrailerParking.js";
+import BusParking from "./BusParking.js";
 
 window.onload = () => {
     document.getElementById("try").onclick = () => {
@@ -26,6 +27,8 @@ const game = new PiekoszekEngine(document.getElementById("canvas"), () => {
     playerBus.moving = true;
 
     let items = [];
+
+    items.push(addBusParking());
 
     game.addBehaviour((params) => {
 
@@ -137,4 +140,16 @@ function addTrailerParking(rect) {
         });
     EditorTransformer.Transform(trailerParking);
     return trailerParking;
+}
+
+function addBusParking() {
+    const parking = game.createSprite("/assets/bus/parking.png", BusParking,
+        {
+            x: 100,
+            y: 400,
+            sx: 0.5,
+            sy: 0.5,
+        });
+    EditorTransformer.Transform(parking);
+    return parking;
 }

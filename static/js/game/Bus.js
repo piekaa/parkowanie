@@ -44,7 +44,7 @@ class Bus extends Sprite {
 
     addLights(path) {
         this.#lightMaskImagePath = path;
-        this.#frontLights = new Lights(path, this, 488, 15, 75);
+        this.#frontLights = new Lights(path, this, 448, 15, 75);
         this.#rearLights = new Lights(path, this, -40, 15, 75, true);
         this.turnOffLights();
     }

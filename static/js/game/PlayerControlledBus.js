@@ -97,6 +97,11 @@ class PlayerControlledBus extends Bus {
         this.turn(-1);
     }
 
+    isStooped() {
+        console.log(this.#speed);
+        return Math.abs(this.#speed) < 0.01;
+    }
+
 
 }
 

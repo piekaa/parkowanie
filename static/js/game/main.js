@@ -5,6 +5,7 @@ import Trailer from "./Trailer.js";
 import TrailerParking from "./TrailerParking.js";
 import GameController from "./GameController.js";
 import CameraController from "./CameraController.js";
+import BusParking from "./BusParking.js";
 
 
 const levelParam = new URLSearchParams(window.location.search).get("level");
@@ -21,7 +22,8 @@ LevelLoader.Load(document.getElementById("canvas"),
     [PlayerControlledBus,
         StandingBus,
         Trailer,
-        TrailerParking],
+        TrailerParking,
+        BusParking],
     (game) => {
         const bus = game.getSpriteByType(PlayerControlledBus);
         game.camera.follow(bus);

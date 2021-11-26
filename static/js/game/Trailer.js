@@ -102,7 +102,7 @@ class Trailer extends Sprite {
     }
 
     disconnectIfStopped() {
-        if (this.speed < 0.03) {
+        if (this.speed < 0.005) {
             this.connected = false;
             this.connectedTo = undefined;
             this.done = true;
