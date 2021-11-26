@@ -16,35 +16,35 @@ class LevelLoader {
         LevelLoader.types = types;
         LevelLoader.afterInitFunction = afterInitFunction;
         LevelLoader.cleanupFunction = cleanupFunction;
-        LevelLoader.#load();
+        LevelLoader.#createGame();
     }
 
     static restart() {
-        this.game.forgetAll();
-        this.#load();
+        LevelLoader.game.forgetAll();
+        LevelLoader.#addItems()
     }
 
-    static #load() {
+    static #createGame() {
+        const game = new PiekoszekEngine(LevelLoader.canvas, LevelLoader.#addItems);
+        LevelLoader.game = game;
+        return game;
+    }
+
+    static #addItems() {
         let typesMap = {
             "Sprite": Sprite,
         }
-
         LevelLoader.types.forEach(type => {
             typesMap[type.prototype.constructor.name] = type;
         })
-
-        const game = new PiekoszekEngine(LevelLoader.canvas, () => {
-            const level = JSON.parse(LevelLoader.levelString);
-            level.items.forEach(item => {
-                const sprite = game.createSprite(item.imagePath, typesMap[item.type]);
-                sprite.afterInit = () => {
-                    sprite.deserialize(item);
-                }
-            });
-            LevelLoader.afterInitFunction(game);
+        const level = JSON.parse(LevelLoader.levelString);
+        level.items.forEach(item => {
+            const sprite = LevelLoader.game.createSprite(item.imagePath, typesMap[item.type]);
+            sprite.afterInit = () => {
+                sprite.deserialize(item);
+            }
         });
-        LevelLoader.game = game;
-        return game;
+        LevelLoader.afterInitFunction(LevelLoader.game);
     }
 
 }
