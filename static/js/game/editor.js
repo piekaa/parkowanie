@@ -70,11 +70,11 @@ const game = new PiekoszekEngine(document.getElementById("canvas"), () => {
 
         if (params.keyDownThisFrame("m")) {
             items.push(addTrailer(params.screenRect));
-            items.push(addTrailerParking(params.screenRect));
+            items.unshift(addTrailerParking(params.screenRect));
         }
 
         if (params.keyDownThisFrame("k")) {
-            document.getElementById("serialized").value = Serializer.SerializeToString([playerBus, ...items]);
+            document.getElementById("serialized").value = Serializer.SerializeToString([...items, playerBus]);
         }
     });
 });
@@ -111,6 +111,7 @@ function addTrailer(rect) {
             sx: 0.5,
             sy: 0.5,
         });
+    trailer.addLights("/assets/bus/lightMask.png");
     EditorTransformer.Transform(trailer);
     return trailer;
 }
@@ -121,7 +122,7 @@ function addTrailerParking(rect) {
             x: (game.camera.wx + rect.width / 2) / game.camera.sx,
             y: (game.camera.wy + rect.height / 2) / game.camera.sy + 100,
             sx: 0.5,
-            sy: 0.6,
+            sy: 0.5,
         });
     EditorTransformer.Transform(trailerParking);
     return trailerParking;

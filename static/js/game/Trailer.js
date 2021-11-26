@@ -3,6 +3,7 @@ import TrailerConnectionPoint from "./TrailerConnectionPoint.js";
 import Hook from "./Hook.js";
 import Collider from "../engine/Collider.js";
 import Vector from "../engine/Vector.js";
+import Lights from "./Lights.js";
 
 class Trailer extends Sprite {
 
@@ -12,6 +13,12 @@ class Trailer extends Sprite {
     connectedTo;
     done = false;
     speed = 0;
+
+    #rearLights;
+
+    #turnOffLightsIn = 0;
+
+    #connectionPointCollider;
 
     init() {
         this.#connectionPoint = this.addPixelChild({
@@ -57,14 +64,15 @@ class Trailer extends Sprite {
         ]));
 
         // // palak
-        this.addCollider(new Collider([
+        this.#connectionPointCollider = new Collider([
             new Vector(351, 80 - 34),
             new Vector(378, 80 - 34),
             new Vector(392, 80 - 37),
             new Vector(392, 80 - 41),
             new Vector(387, 80 - 44),
             new Vector(351, 80 - 44),
-        ]));
+        ]);
+        this.addCollider(this.#connectionPointCollider);
 
     }
 
@@ -72,6 +80,13 @@ class Trailer extends Sprite {
         if (this.connected) {
             this.#moveToPoint();
             this.angle = this.#pivotPoint.worldPositionVector().direction(this.connectedTo.worldPositionVector()).toAngleDegrees();
+        }
+
+        if (this.#turnOffLightsIn > 0) {
+            this.turnOnLights();
+            this.#turnOffLightsIn--;
+        } else {
+            this.turnOffLights();
         }
     }
 
@@ -86,12 +101,49 @@ class Trailer extends Sprite {
     }
 
     disconnectIfStopped() {
-        if( this.speed < 0.1) {
+        if (this.speed < 0.03) {
             this.connected = false;
             this.connectedTo = undefined;
             this.done = true;
         }
     }
+
+    addLights(path) {
+        this.#rearLights = new Lights(path, this, -40, 15, 70, true);
+        this.turnOffLights();
+    }
+
+    turnOnLights() {
+        this.#rearLights.turnOn();
+    }
+
+    turnOffLights() {
+        this.#rearLights.turnOff();
+    }
+
+    onCollision(otherCollider, myCollider) {
+        if(myCollider === this.#connectionPointCollider) {
+            if (otherCollider.sprite.constructor.name !== "Hook") {
+                console.log("Not hook, connecting");
+                this.#turnOffLightsIn = 2;
+            }
+        } else {
+            console.log("Not connection point collider connecting");
+            this.#turnOffLightsIn = 2;
+        }
+    }
+
+    serialize() {
+        let item = super.serialize();
+        item.lightsImage = this.#rearLights.imagePath;
+        return item;
+    }
+
+    deserialize(item) {
+        super.deserialize(item);
+        this.addLights(item.lightsImage);
+    }
+
 }
 
 export default Trailer

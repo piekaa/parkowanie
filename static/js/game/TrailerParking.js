@@ -12,11 +12,12 @@ class TrailerParking extends Sprite {
     ])
 
     init() {
+        this.trigger = true;
         this.addCollider(TrailerParking.collider.copy());
     }
 
     onFullyInside(sprite) {
-        if( sprite.constructor.name === "Trailer") {
+        if (sprite.constructor.name === "Trailer") {
             sprite.disconnectIfStopped();
         }
     }

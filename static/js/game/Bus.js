@@ -1,6 +1,7 @@
 import Sprite from "../engine/Sprite.js";
 import Collider from "../engine/Collider.js";
 import Vector from "../engine/Vector.js";
+import Lights from "./Lights.js";
 
 class Bus extends Sprite {
 
@@ -10,11 +11,8 @@ class Bus extends Sprite {
     #leftRearWheel = {};
     #rightRearWheel = {};
 
-    #frontLeftLight = {};
-    #frontRightLight = {};
-
-    #rearLeftLight = {};
-    #rearRightLight = {};
+    #frontLights;
+    #rearLights;
 
     #lightMaskImagePath = "";
 
@@ -46,20 +44,9 @@ class Bus extends Sprite {
 
     addLights(path) {
         this.#lightMaskImagePath = path;
-        this.#frontRightLight = super.addChild(path, Sprite, {x: 448, y: 15});
-        this.#frontLeftLight = super.addChild(path, Sprite, {x: 448, y: 75});
-
-        this.#frontLeftLight.setColor([0.9, 0.9, 0.5, 1]);
-        this.#frontRightLight.setColor([0.9, 0.9, 0.5, 1]);
-
-        this.#rearRightLight = super.addChild(path, Sprite, {x: -40, y: 15, sx: -1});
-        this.#rearLeftLight = super.addChild(path, Sprite, {x: -40, y: 70, sx: -1});
-
-        this.#rearRightLight.setColor([0.9, 0.3, 0.3, 1]);
-        this.#rearLeftLight.setColor([0.9, 0.3, 0.3, 1]);
-
+        this.#frontLights = new Lights(path, this, 488, 15, 75);
+        this.#rearLights = new Lights(path, this, -40, 15, 75, true);
         this.turnOffLights();
-
     }
 
     init() {
@@ -85,29 +72,24 @@ class Bus extends Sprite {
     }
 
     turnOnLights() {
-        this.#frontRightLight.visible = true;
-        this.#frontLeftLight.visible = true;
-        this.#rearRightLight.visible = true;
-        this.#rearLeftLight.visible = true;
+        this.#frontLights.turnOn();
+        this.#rearLights.turnOn();
     }
 
     turnOffLights() {
-        this.#frontRightLight.visible = false;
-        this.#frontLeftLight.visible = false;
-        this.#rearRightLight.visible = false;
-        this.#rearLeftLight.visible = false;
+        this.#frontLights.turnOff();
+        this.#rearLights.turnOff();
     }
 
     serialize() {
         let item = super.serialize();
-        item.lightMaskImagePath = this.#lightMaskImagePath;
+        item.lightsImage = this.#frontLights.imagePath;
         return item;
     }
 
     deserialize(item) {
         super.deserialize(item);
-        this.addLights(item.lightMaskImagePath);
-
+        this.addLights(item.lightsImage);
     }
 
     turn(angle) {

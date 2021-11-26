@@ -15,6 +15,7 @@ class PiekoszekEngine {
 
     #movingColliders = [];
     #notMovingColliders = [];
+    #triggerColliders = [];
 
     #movingSprites = [];
     #movingSpritesMap = {};
@@ -148,6 +149,10 @@ class PiekoszekEngine {
         this.#notMovingColliders.push(collider);
     }
 
+    addTriggerCollider(collider) {
+        this.#triggerColliders.push(collider);
+    }
+
     #update() {
         const rect = this.#canvas.getBoundingClientRect();
         this.#updateParams.screenRect = rect;
@@ -169,26 +174,31 @@ class PiekoszekEngine {
                     continue;
                 }
                 const collider2 = this.#movingColliders[j];
-
-                if (!collider2.sprite.isReady()) {
-                    continue;
-                }
-
-                if (collider.collides(collider2)) {
-                    collider.sprite.onCollision(collider2);
-                    collider2.sprite.onCollision(collider);
-                }
+                PiekoszekEngine.#invokeOnCollisionIfCollides(collider, collider2);
             }
 
             for (let j = 0; j < this.#notMovingColliders.length; j++) {
                 const collider2 = this.#notMovingColliders[j];
-
-                if (collider.collides(collider2)) {
-                    collider.sprite.onCollision(collider2);
-                    collider2.sprite.onCollision(collider);
-                }
+                PiekoszekEngine.#invokeOnCollisionIfCollides(collider, collider2);
             }
 
+        }
+    }
+
+    // true if continue
+    static #invokeOnCollisionIfCollides(collider, collider2) {
+        if (!collider2.sprite.isReady()) {
+            return;
+        }
+        if (collider.sprite.isSameOrParent(collider2.sprite)) {
+            return;
+        }
+        if (collider2.sprite.isSameOrParent(collider.sprite)) {
+            return;
+        }
+        if (collider.collides(collider2)) {
+            collider.sprite.onCollision(collider2, collider);
+            collider2.sprite.onCollision(collider, collider2);
         }
     }
 
@@ -215,8 +225,8 @@ class PiekoszekEngine {
     #checkFullCollisions() {
         for (let i = 0; i < this.#movingSprites.length; i++) {
             const sprite = this.#movingSprites[i];
-            for (let j = 0; j < this.#notMovingColliders.length; j++) {
-                const collider = this.#notMovingColliders[j];
+            for (let j = 0; j < this.#triggerColliders.length; j++) {
+                const collider = this.#triggerColliders[j];
                 if (collider.allCollidersInside(sprite.colliders)) {
                     collider.sprite.onFullyInside(sprite);
                 }

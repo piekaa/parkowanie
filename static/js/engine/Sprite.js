@@ -21,6 +21,7 @@ class Sprite {
     #positionBuffer
     #positionBufferData
 
+    parent;
     #children = []
 
     visible = true;
@@ -46,6 +47,7 @@ class Sprite {
     colliders = [];
 
     moving = false;
+    trigger = false;
 
     #colorArray = new Float32Array([1, 1, 1, 1]);
 
@@ -133,12 +135,14 @@ class Sprite {
 
     addChild(imagePath, Type = Sprite, transformation = {x: 0, y: 0, sx: 1, sy: 1, color: [1, 1, 1, 1]}) {
         const sprite = this.game.newSprite(imagePath, Type, transformation);
+        sprite.parent = this;
         this.#children.push(sprite);
         return sprite;
     }
 
     addPixelChild(transformation = {x: 0, y: 0, sx: 1, sy: 1, color: [1, 1, 1, 1]}, Type = Sprite) {
         const sprite = this.game.newPixelSprite(transformation, Type);
+        sprite.parent = this;
         this.#children.push(sprite);
         return sprite;
     }
@@ -146,6 +150,11 @@ class Sprite {
     addCollider(collider) {
         this.colliders.push(collider);
         collider.sprite = this;
+
+        if(this.trigger) {
+            this.game.addTriggerCollider(collider);
+            return;
+        }
 
         if (this.moving) {
             this.game.addMovingCollider(collider);
@@ -314,6 +323,19 @@ class Sprite {
         // item.colliders.forEach(serializedCollider => {
         //     this.addCollider(new Collider(serializedCollider.map(Vector.FromObject)));
         // })
+    }
+
+    isSameOrParent(sprite) {
+        if (sprite === this) {
+            return true;
+        }
+
+        for (let s = this.parent; s; s = s.parent) {
+            if (sprite === s) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
