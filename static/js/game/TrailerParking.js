@@ -5,6 +5,8 @@ import PiekoszekEngine from "../engine/PiekoszekEngine.js";
 
 class TrailerParking extends Sprite {
 
+    done = false;
+
     static collider = new Collider([
         new Vector(0, 0),
         new Vector(0, 100),
@@ -19,8 +21,9 @@ class TrailerParking extends Sprite {
 
     onFullyInside(sprite) {
         if (sprite.constructor.name === "Trailer" &&
-        PiekoszekEngine.colorEquals(this.getColor(), sprite.getColor())) {
+            PiekoszekEngine.colorEquals(this.getColor(), sprite.getColor())) {
             sprite.disconnectIfStopped();
+            this.done = true;
         }
     }
 }

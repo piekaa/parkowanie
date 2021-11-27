@@ -48,7 +48,6 @@ class LevelLoader {
         });
         LevelLoader.afterInitFunction(LevelLoader.game);
     }
-
 }
 
 export default LevelLoader

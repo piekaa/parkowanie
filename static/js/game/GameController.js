@@ -4,15 +4,15 @@ import LevelLoader from "../engine/LevelLoader.js";
 class GameController {
 
     static playerBus;
-
     static restarting = false;
+    static finishing = false;
+    static stopper;
 
-    static timer;
-
-    static start(timer) {
-        this.timer = timer;
-        timer.restart();
+    static start(stopper) {
+        this.stopper = stopper;
+        stopper.restart();
         GameController.restarting = false;
+        GameController.finishing = false;
     }
 
     static restart() {
@@ -20,12 +20,36 @@ class GameController {
             return;
         }
         GameController.restarting = true;
-        this.playerBus.update = () => {
-        };
-        CameraController.zoomOutToShowCollision();
+        this.#stopGame();
         LevelLoader.restart(3000);
     }
 
+    static finish() {
+
+        if(GameController.finishing){
+            return;
+        }
+
+        this.stopper.stop();
+        this.#stopGame();
+        const seconds = this.stopper.seconds();
+        const record = GameController.record();
+
+        if (!record || seconds < record) {
+            localStorage.setItem(LevelLoader.levelString, `${seconds}`);
+        }
+    }
+
+    static #stopGame() {
+        GameController.stopper.stop();
+        this.playerBus.update = () => {
+        };
+        CameraController.zoomOutToShowCollision();
+    }
+
+    static record() {
+        return parseInt(localStorage.getItem(LevelLoader.levelString));
+    }
 }
 
 export default GameController

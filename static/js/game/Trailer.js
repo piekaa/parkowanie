@@ -106,7 +106,9 @@ class Trailer extends Sprite {
             this.connected = false;
             this.connectedTo = undefined;
             this.done = true;
+            return true;
         }
+        return false;
     }
 
     addLights(path) {

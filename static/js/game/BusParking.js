@@ -1,7 +1,8 @@
 import Sprite from "../engine/Sprite.js";
 import Collider from "../engine/Collider.js";
 import Vector from "../engine/Vector.js";
-import PiekoszekEngine from "../engine/PiekoszekEngine.js";
+import TrailerParking from "./TrailerParking.js";
+import GameController from "./GameController.js";
 
 class BusParking extends Sprite {
 
@@ -18,11 +19,11 @@ class BusParking extends Sprite {
     }
 
     onFullyInside(sprite) {
-        if (sprite.constructor.name === "PlayerControlledBus") {
-        }
-
         if (sprite.constructor.name === "PlayerControlledBus" && sprite.isStooped()) {
-            sprite.turnOnLights();
+            if (this.game.getSpritesByType(TrailerParking).filter(parking => !parking.done).length === 0) {
+                GameController.finish();
+                sprite.turnOnLights();
+            }
         }
     }
 }
