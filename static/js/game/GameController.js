@@ -7,7 +7,11 @@ class GameController {
 
     static restarting = false;
 
-    static start() {
+    static timer;
+
+    static start(timer) {
+        this.timer = timer;
+        timer.restart();
         GameController.restarting = false;
     }
 

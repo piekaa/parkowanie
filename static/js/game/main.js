@@ -6,6 +6,8 @@ import TrailerParking from "./TrailerParking.js";
 import GameController from "./GameController.js";
 import CameraController from "./CameraController.js";
 import BusParking from "./BusParking.js";
+import Number from "./Number.js";
+import Timer from "./Timer.js";
 
 
 const levelParam = new URLSearchParams(window.location.search).get("level");
@@ -16,6 +18,8 @@ if (levelParam !== null) {
     level = decodeURIComponent(levelParam);
 }
 
+
+// level = `{"items": []}`;
 
 LevelLoader.Load(document.getElementById("canvas"),
     level,
@@ -28,6 +32,10 @@ LevelLoader.Load(document.getElementById("canvas"),
         const bus = game.getSpriteByType(PlayerControlledBus);
         game.camera.follow(bus);
         GameController.playerBus = bus;
-        GameController.start();
+
+        const timer = Timer.New(game);
+
+
+        GameController.start(timer);
         CameraController.setup(game);
     });

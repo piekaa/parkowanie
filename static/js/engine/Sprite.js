@@ -53,6 +53,8 @@ class Sprite {
 
     #imagePath;
 
+    isUi = false;
+
     static imageCache = [];
 
     afterInit = () => {
@@ -155,7 +157,7 @@ class Sprite {
         this.colliders.push(collider);
         collider.sprite = this;
 
-        if(this.trigger) {
+        if (this.trigger) {
             this.game.addTriggerCollider(collider);
             return;
         }
@@ -205,7 +207,7 @@ class Sprite {
 
     }
 
-    render(screenAndCameraArray, parentTransformation = Matrix2D.Identity()) {
+    render(screenAndCameraArray, uiArray, parentTransformation = Matrix2D.Identity()) {
         if (!this.#ready) {
             return;
         }
@@ -226,7 +228,7 @@ class Sprite {
         this.colliders.forEach(collider => collider.update(transformation));
 
         if (this.renderChildrenFirst) {
-            this.#children.forEach(child => child.render(screenAndCameraArray, transformation));
+            this.#children.forEach(child => child.render(screenAndCameraArray, uiArray, transformation));
         }
 
         if (this.visible) {
@@ -274,7 +276,7 @@ class Sprite {
             this.#gl.uniformMatrix3fv(
                 this.#gl.getUniformLocation(this.shaderProgram, "screenAndCamera"),
                 false,
-                screenAndCameraArray);
+                this.isUi ? uiArray : screenAndCameraArray);
 
             this.#gl.uniform4fv(
                 this.#gl.getUniformLocation(this.shaderProgram, "color"),
@@ -283,11 +285,10 @@ class Sprite {
 
 
             this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4);
-
         }
 
         if (!this.renderChildrenFirst) {
-            this.#children.forEach(child => child.render(screenAndCameraArray, transformation));
+            this.#children.forEach(child => child.render(screenAndCameraArray, uiArray, transformation));
         }
     }
 
@@ -296,11 +297,6 @@ class Sprite {
     }
 
     serialize() {
-
-        // let serializedColliders = [];
-        // this.colliders.forEach(collider => {
-        //     serializedColliders.push(collider.serialize());
-        // })
 
         return {
             x: this.x,
@@ -312,7 +308,6 @@ class Sprite {
             type: this.constructor.name,
             imagePath: this.#imagePath,
             moving: this.moving,
-            // colliders: serializedColliders,
         };
     }
 
@@ -324,9 +319,6 @@ class Sprite {
         this.angle = item.angle;
         this.setColor(new Float32Array(item.color));
         this.moving = item.moving;
-        // item.colliders.forEach(serializedCollider => {
-        //     this.addCollider(new Collider(serializedCollider.map(Vector.FromObject)));
-        // })
     }
 
     isSameOrParent(sprite) {

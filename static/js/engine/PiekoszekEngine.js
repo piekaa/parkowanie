@@ -252,8 +252,9 @@ class PiekoszekEngine {
     #render(rect) {
         this.#gl.clearColor(0.5, 0.5, 0.5, 1);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
-        const screenAndCamera = Matrix2D.Scale(2 / rect.width, 2 / rect.height).multiply(Matrix2D.Translation(-rect.width / 2, -rect.height / 2)).multiply(this.camera.matrix(rect));
-        this.#sprites.forEach(sprite => sprite.render(screenAndCamera.float32array()));
+        const uiMatrix = Matrix2D.Scale(2 / rect.width, 2 / rect.height).multiply(Matrix2D.Translation(-rect.width / 2, -rect.height / 2));
+        const screenAndCamera = uiMatrix.multiply(this.camera.matrix(rect));
+        this.#sprites.forEach(sprite => sprite.render(screenAndCamera.float32array(), uiMatrix.float32array()));
     }
 
     static colorEquals(col1, col2) {
