@@ -272,6 +272,10 @@ class PiekoszekEngine {
         this.#movingSprites = [];
         this.#movingSpritesMap = {};
     }
+
+    forEachSprite(func) {
+        this.#sprites.forEach(func);
+    }
 }
 
 class UpdateParams {
