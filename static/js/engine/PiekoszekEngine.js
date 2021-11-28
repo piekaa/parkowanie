@@ -291,16 +291,7 @@ class PiekoszekEngine {
 
 
     fullScreen() {
-        console.log("Full screen button");
-        this.#canvas.requestFullscreen()
-            .then(function() {
-            console.log("in full screen");
-        })
-            .catch(function(error) {
-                // element could not enter fullscreen mode
-                // error message
-                console.log(error.message);
-            });
+        this.#canvas.requestFullscreen();
     }
 }
 

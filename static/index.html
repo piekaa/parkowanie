@@ -27,6 +27,40 @@
             cursor: none;
         }
 
+        button {
+            margin: 15px;
+            font-size: 1.3em;
+            padding: 8px;
+            background: black;
+            color: white;
+            border: none;
+        }
+
+        .finished {
+            margin: 8px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .finished div {
+            font-size: 2em;
+        }
+
+        .finished a {
+            width: 150px;
+            padding: 8px;
+            font-size: 1.3em;
+            background: black;
+            color: white;
+            border: none;
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
     </style>
 
 </head>
@@ -37,7 +71,14 @@
 
     </canvas>
 
+
+    <div id="finished" class="finished">
+        <div>Poziom zaliczony!</div>
+        <a href="poziomy.html">Lista poziomów</a>
+    </div>
+
     <button id="fullScreen">Pełny ekran</button>
+
 
 </div>
 

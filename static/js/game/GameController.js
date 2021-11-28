@@ -26,6 +26,10 @@ class GameController {
 
     static finish() {
 
+        document.exitFullscreen();
+
+        document.getElementById("finished").style.display = "flex";
+
         if(GameController.finishing){
             return;
         }

@@ -29,14 +29,13 @@ class Stopper extends Timer {
     }
 
     update(params) {
-        if( this.#stopped) {
-            return;
-        }
-
         this.x = params.screenRect.width / 2;
         this.y = params.screenRect.height - 50;
-        const date = new Date(new Date().getTime() - this.#startTimeMillis);
-        this.setTime(date);
+        if(!this.#stopped) {
+            const date = new Date(new Date().getTime() - this.#startTimeMillis);
+            this.setTime(date);
+        }
+
     }
 
 }
