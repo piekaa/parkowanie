@@ -26,8 +26,8 @@ class PiekoszekEngine {
 
         this.#updateParams = new UpdateParams(canvas, this.camera);
 
-        this.#canvas.width = 1920;
-        this.#canvas.height = 1080;
+        this.#canvas.width = window.screen.width;
+        this.#canvas.height = window.screen.height;
 
         this.#gl = canvas.getContext("webgl");
         this.#gl.clearColor(1, 0, 0, 1);
@@ -287,6 +287,20 @@ class PiekoszekEngine {
 
     forEachSprite(func) {
         this.#sprites.forEach(func);
+    }
+
+
+    fullScreen() {
+        console.log("Full screen button");
+        this.#canvas.requestFullscreen()
+            .then(function() {
+            console.log("in full screen");
+        })
+            .catch(function(error) {
+                // element could not enter fullscreen mode
+                // error message
+                console.log(error.message);
+            });
     }
 }
 

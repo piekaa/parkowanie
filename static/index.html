@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Parkowanie</title>
 
-<!--  todo replace  -->
+    <!--  todo replace  -->
     <link rel="icon" href="data:,">
 
     <style>
@@ -14,13 +14,19 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
         }
 
-        canvas{
+        canvas {
             width: 80%;
             height: 80vh;
             border: 1px black solid;
         }
+
+        canvas:fullscreen {
+            cursor: none;
+        }
+
     </style>
 
 </head>
@@ -30,6 +36,9 @@
     <canvas id="canvas">
 
     </canvas>
+
+    <button id="fullScreen">Pełny ekran</button>
+
 </div>
 
 

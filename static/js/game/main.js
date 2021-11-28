@@ -29,6 +29,11 @@ LevelLoader.Load(document.getElementById("canvas"),
         TrailerParking,
         BusParking],
     (game) => {
+
+        document.getElementById("fullScreen").onclick = () => {
+            game.fullScreen();
+        };
+
         const bus = game.getSpriteByType(PlayerControlledBus);
         game.camera.follow(bus);
         GameController.playerBus = bus;
