@@ -17,8 +17,6 @@ class Trailer extends Sprite {
 
     #rearLights;
 
-    #turnOffLightsIn = 0;
-
     #connectionPointCollider;
 
     init() {
@@ -82,13 +80,6 @@ class Trailer extends Sprite {
             this.#moveToPoint();
             this.angle = this.#pivotPoint.worldPositionVector().direction(this.connectedTo.worldPositionVector()).toAngleDegrees();
         }
-
-        if (this.#turnOffLightsIn > 0) {
-            this.turnOnLights();
-            this.#turnOffLightsIn--;
-        } else {
-            this.turnOffLights();
-        }
     }
 
     #moveToPoint() {
@@ -125,13 +116,18 @@ class Trailer extends Sprite {
     }
 
     onCollision(otherCollider, myCollider) {
+
+        if( this.connected && otherCollider.sprite.constructor.name === "TrailerConnectionPoint") {
+            return;
+        }
+
         if (myCollider === this.#connectionPointCollider) {
             if (otherCollider.sprite.constructor.name !== "Hook") {
-                this.#turnOffLightsIn = 2;
+                this.turnOnLights();
                 GameController.restart();
             }
         } else {
-            this.#turnOffLightsIn = 2;
+            this.turnOnLights();
             GameController.restart();
         }
     }
